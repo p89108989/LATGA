@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">LATGA Test Case Generation Tool</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .file-drop-zone {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+        .file-drop-zone:hover {
+            border-color: #0d6efd;
+            background-color: #e7f3ff;
+        }
+        .file-drop-zone.dragover {
+            border-color: #0d6efd;
+            background-color: #e7f3ff;
+        }
+        .mode-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 180px;
+        }
+        .mode-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        .mode-card.selected {
+            border-color: #0d6efd;
+            background-color: #e7f3ff;
+            border-width: 3px;
+        }
+        .mode-card .card-body {
+            padding: 2rem;
+        }
+
+        /* EditorGPT mode special styling - purple theme */
+        .editor-mode-card {
+            border: 2px solid #8B5CF6;
+            background: linear-gradient(135deg, #F3E8FF 0%, #EDE9FE 100%);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            min-height: 80px;
+        }
+        .editor-mode-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+            border-color: #7C3AED;
+        }
+        .editor-mode-card.selected {
+            border-color: #7C3AED;
+            background: linear-gradient(135deg, #E9D5FF 0%, #DDD6FE 100%);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+        }
+        .editor-mode-card .card-body {
+            padding: 1.2rem;
+        }
+
+        /* Karate merge mode special styling - orange theme */
+        .merger-mode-card {
+            border: 2px solid #F59E0B;
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            min-height: 80px;
+        }
+        .merger-mode-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+            border-color: #D97706;
+        }
+        .merger-mode-card.selected {
+            border-color: #D97706;
+            background: linear-gradient(135deg, #FCD34D 0%, #FBB040 100%);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+        }
+        .merger-mode-card .card-body {
+            padding: 1.2rem;
+        }
+
+        /* Custom prompt area styling */
+        .custom-prompt-area {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px dashed #dee2e6;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            animation: slideDown 0.4s ease;
+        }
+
+        .custom-prompt-area.show {
+            border-color: #0d6efd;
+            background: linear-gradient(135deg, #e7f3ff 0%, #cce7ff 100%);
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.1);
+        }
+
+        .custom-prompt-textarea {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            resize: vertical;
+            min-height: 150px;
+            transition: all 0.3s ease;
+        }
+
+        .custom-prompt-textarea:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        /* Toggle button styling */
+        .btn-toggle-prompt {
+            transition: all 0.3s ease;
+            font-weight: 600;
+            border-radius: 25px;
+            padding: 0.6rem 1.2rem;
+        }
+
+        .btn-toggle-prompt:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Toggle animation */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        .custom-prompt-area.hiding {
+            animation: slideUp 0.3s ease;
+        }
+
+        .editor-icon {
+            color: #8B5CF6;
+            font-size: 1.5rem;
+        }
+
+        .merger-icon {
+            color: #F59E0B;
+            font-size: 1.5rem;
+        }
+
+        .loading-spinner {
+            display: none;
+        }
+        .progress-container {
+            display: none;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        .progress-container.show {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .progress {
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #e9ecef;
+        }
+
+        .progress-bar {
+            background: linear-gradient(45deg, #007bff, #28a745);
+            transition: width 0.8s ease;
+        }
+
+        .progress-bar.animated {
+            background-size: 40px 40px;
+            animation: progress-bar-stripes 1s linear infinite;
+        }
+
+        @keyframes progress-bar-stripes {
+            0% { background-position: 40px 0; }
+            100% { background-position: 0 0; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-stages {
+            margin-top: 1rem;
+        }
+
+        .stage-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .stage-item.active {
+            background-color: #e7f3ff;
+            font-weight: bold;
+        }
+
+        .stage-item.completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .stage-icon {
+            margin-right: 0.5rem;
+            width: 20px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 9999;
+            transform: translateX(400px);
+            transition: transform 0.5s ease;
+            max-width: 400px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        .notification.warning {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .completion-animation {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .completion-icon {
+            font-size: 4rem;
+            color: #28a745;
+            animation: bounceIn 1s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .download-pulse {
+            animation: downloadPulse 2s infinite;
+        }
+
+        @keyframes downloadPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .auto-download-notice {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 2rem auto;
+            text-align: center;
+            animation: slideInDown 0.5s ease;
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+            max-width: 500px;
+        }
+
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .processing-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 9998;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .processing-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .pulse-loader {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e3f2fd;
+            border-top: 4px solid #2196f3;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            padding: 2rem 0;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 2px solid #28a745;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            animation: slideInUp 0.6s ease;
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .download-button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .download-button-group .btn {
+            min-width: 160px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .download-button-group .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .completion-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            margin: 2rem auto;
+            max-width: 500px;
+            text-align: center;
+            animation: fadeInScale 0.8s ease;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Claude AI assistant styling */
+        .claude-ai-notice {
+            background: linear-gradient(135deg, #f8f4e6 0%, #fff8e1 100%);
+            border: 2px solid #ff9500;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 4px 15px rgba(255, 149, 0, 0.1);
+            animation: slideInFromTop 0.6s ease;
+        }
+
+        .claude-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff9500, #ffb347);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            margin: 0 auto 1rem auto;
+            box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .btn-claude {
+            background: linear-gradient(135deg, #ff9500, #ffb347);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3);
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .btn-claude:hover {
+            background: linear-gradient(135deg, #e6850e, #ff9500);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 149, 0, 0.4);
+        }
+
+        /* Copy button styling */
+        .btn-copy {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-copy:hover {
+            background: linear-gradient(135deg, #5a6268, #343a40);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-copy.copied {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            animation: copiedBounce 0.6s ease;
+        }
+
+        @keyframes copiedBounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Prompt section styling */
+        .prompt-section {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+        }
+
+        .prompt-text {
+            background-color: white;
+            padding: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive optimization */
+        @media (max-width: 768px) {
+            .auto-download-notice {
+                margin: 1rem;
+                padding: 1rem;
+            }
+
+            .result-card {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            .download-button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .download-button-group .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+
+            .claude-ai-notice {
+                margin: 1rem;
+                padding: 1rem;
+            }
+
+            .claude-ai-notice .row {
+                text-align: center;
+            }
+
+            .claude-ai-notice .col-md-8 {
+                margin-bottom: 1rem;
+            }
+
+            .editor-mode-card,
+            .merger-mode-card {
+                margin-bottom: 1rem;
+            }
+
+            .btn-claude {
+                width: 100%;
+                max-width: none;
+            }
+
+            .custom-prompt-area {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div class="container py-5">
+    <!-- Title section -->
+    <div class="text-center mb-5">
+        <h1 class="mb-3">
+            <i class="fas fa-cogs text-primary"></i>
+            <span th:text="${title}">LATGA Test Case Generation Tool</span>
+        </h1>
+        <p class="lead text-muted" th:text="${version}">v4.1 - Web Edition (Integrated KarateMerger)</p>
+    </div>
+
+    <!-- Main form -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <form id="latgaForm" method="post" enctype="multipart/form-data">
+
+                <!-- Main test case generation mode -->
+                <div class="mb-4">
+                    <h4 class="mb-3"><i class="fas fa-tasks"></i> Test Case Generation Mode</h4>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card mode-card h-100" data-mode="Structural">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <i class="fas fa-file-code text-primary me-3" style="font-size: 1.8rem;"></i>
+                                        <h4 class="card-title mb-0">Structural Blackbox</h4>
+                                    </div>
+                                    <p class="card-text text-muted mb-3" style="font-size: 1.1rem;">Generate Structural test cases based on API documentation</p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        Please provide Swagger file and API operation dependency graph (RTG generated)
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card mode-card h-100" data-mode="Behavior">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <i class="fas fa-robot text-success me-3" style="font-size: 1.8rem;"></i>
+                                        <h4 class="card-title mb-0">Behavioral Blackbox</h4>
+                                    </div>
+                                    <p class="card-text text-muted mb-3" style="font-size: 1.1rem;">Behavior test generation and execution, including frontend and user behavior analysis</p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        Please provide Swagger file, API operation dependency graph (RTG generated), and API frontend
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="selectedMode" name="mode" value="Structural" required>
+                </div>
+
+                <!-- Claude AI assistant section (only shown in Behavioral mode) -->
+                <div id="claudeAISection" class="mb-4" style="display: none;">
+                    <div class="claude-ai-notice">
+                        <div class="text-center">
+                            <div class="claude-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h5 class="mb-3">
+                                <i class="fas fa-sparkles me-2"></i>
+                                <strong>Behavioral Mode Requires AI Assistant</strong>
+                            </h5>
+                        </div>
+
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <p class="mb-3 text-muted">
+                                    Behavioral mode requires integration with Claude AI for intelligent analysis and test generation.
+                                    Please visit Claude website first to prepare your analysis requirements.
+                                </p>
+                                <small class="text-muted d-block mb-3">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    We recommend describing your test requirements in Claude, then uploading relevant files to this tool for processing
+                                </small>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <a href="https://claude.ai" target="_blank" class="btn btn-claude mb-2">
+                                    <i class="fas fa-external-link-alt me-2"></i>
+                                    Go to Claude
+                                </a>
+                                <br>
+                                <small class="text-muted">Copy the prompt below and use</small>
+                            </div>
+                        </div>
+
+                        <!-- Pre-written prompt section -->
+                        <div class="prompt-section">
+                            <h6 class="mb-3">
+                                <i class="fas fa-clipboard-list me-2"></i>
+                                Recommended Prompt:
+                            </h6>
+                            <div class="prompt-text" id="promptText">I'm providing you with an API swagger file and its operation dependency graph. Please analyze the swagger operations and workflow with the help of the operation dependency graph, and generate a comprehensive frontend page that covers all endpoint operations while ensuring the workflow aligns with the operation dependency graph.</div>
+                            <div class="text-center">
+                                <button type="button" class="btn btn-copy" id="copyPromptBtn">
+                                    <i class="fas fa-copy me-1"></i>
+                                    <span id="copyBtnText">Copy Prompt</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI assistant tools section -->
+                <div class="mb-4">
+                    <h4 class="mb-3"><i class="fas fa-robot text-primary"></i> Assistant Features</h4>
+
+                    <!-- EditorGPT mode -->
+                    <div class="editor-mode-card" data-mode="editorgpt">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-2 text-center">
+                                    <i class="fas fa-edit editor-icon" style="font-size: 1.8rem;"></i>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <h6 class="card-title mb-0 text-dark">EditorGPT Mode</h6>
+                                        <span class="badge bg-primary text-white ms-2">AI Enhanced</span>
+                                    </div>
+                                    <p class="card-text text-muted mb-1" style="font-size: 1.0rem;">
+                                        Use AI to analyze and enhance Swagger files, automatically generate test parameters and boundary values
+                                    </p>
+                                    <small class="text-muted" style="font-size: 0.9rem;">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        Only requires Swagger file (.json/.yaml), AI will automatically analyze and enhance content
+                                    </small>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <i class="fas fa-sparkles text-primary mb-1" style="font-size: 1rem;"></i>
+                                        <small class="text-muted" style="font-size: 0.75rem;">AI Powered</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Karate merge mode -->
+                    <div class="merger-mode-card" data-mode="karate-merger">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-2 text-center">
+                                    <i class="fas fa-object-group merger-icon" style="font-size: 1.8rem;"></i>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <h6 class="card-title mb-0 text-dark">Karate Merge Mode</h6>
+                                        <span class="badge bg-warning text-dark ms-2">Smart Merge</span>
+                                    </div>
+                                    <p class="card-text text-muted mb-1" style="font-size: 1.0rem;">
+                                        Intelligently merge multiple Karate test files, automatically handle duplicates and conflicts, generate unified test files
+                                    </p>
+                                    <small class="text-muted" style="font-size: 0.9rem;">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        Supports multiple .feature files, automatic renumbering and naming strategies
+                                    </small>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <i class="fas fa-code-branch text-warning mb-1" style="font-size: 1rem;"></i>
+                                        <small class="text-muted" style="font-size: 0.75rem;">Smart Merge</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customed Prompt section -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">
+                            <i class="fas fa-edit"></i>
+                            Customed Prompt
+                            <small class="text-muted">(Optional: Add your custom instructions)</small>
+                        </h4>
+                        <button type="button" class="btn btn-outline-primary btn-toggle-prompt" id="toggleCustomPromptBtn">
+                            <i class="fas fa-plus me-2" id="toggleIcon"></i>
+                            <span id="toggleText">Add Custom Prompt</span>
+                        </button>
+                    </div>
+
+                    <!-- Custom prompt input area (hidden by default) -->
+                    <div id="customPromptArea" class="custom-prompt-area" style="display: none;">
+                        <div class="mb-3">
+                            <label for="customPrompt" class="form-label">
+                                <i class="fas fa-keyboard me-2"></i>
+                                <strong>Your Custom Instructions:</strong>
+                            </label>
+                            <textarea
+                                    class="form-control custom-prompt-textarea"
+                                    id="customPrompt"
+                                    name="customPrompt"
+                                    rows="6"
+                                    placeholder="Enter your custom prompt here..."></textarea>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Your custom instructions will be combined with the system prompt to provide personalized AI analysis
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File upload section -->
+                <div class="mb-4">
+                    <h4 class="mb-3">
+                        <i class="fas fa-upload"></i>
+                        Upload Files
+                        <small class="text-muted" id="fileSupportInfo">(Supported: .JSON, .YAML, .dot)</small>
+                    </h4>
+
+                    <!-- Drag and drop upload area -->
+                    <div class="file-drop-zone" id="fileDropZone">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                        <h5>Drag files here or click to select</h5>
+                        <p class="text-muted">Supports multiple file selection, maximum file size: 50MB</p>
+                        <input class="form-control d-none" type="file" id="files" name="files" multiple required>
+                        <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('files').click()">
+                            <i class="fas fa-folder-open"></i> Select Files
+                        </button>
+                    </div>
+
+                    <!-- Selected files display -->
+                    <div id="selectedFiles" class="mt-3" style="display: none;">
+                        <h6><i class="fas fa-file-alt"></i> Selected Files:</h6>
+                        <div id="fileList" class="list-group"></div>
+                    </div>
+                </div>
+
+                <!-- Execute button -->
+                <div class="text-center mb-4">
+                    <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                        <i class="fas fa-play"></i> Execute Generation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Processing overlay -->
+    <div class="processing-overlay" id="processingOverlay">
+        <div class="processing-card">
+            <div class="pulse-loader"></div>
+            <h4 class="mb-3">Processing...</h4>
+            <p class="text-muted mb-3" id="processingMessage">Analyzing files and generating results</p>
+            <div class="progress mb-3">
+                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                     id="simpleProgressBar" style="width: 0%"></div>
+            </div>
+            <small class="text-muted">This process may take a few minutes, please be patient...</small>
+        </div>
+    </div>
+
+    <!-- Auto download notification area -->
+    <div id="autoDownloadNotice" class="row justify-content-center mt-4" style="display:none;">
+        <div class="col-12 d-flex justify-content-center">
+            <div class="auto-download-notice">
+                <h5><i class="fas fa-download"></i> File Ready!</h5>
+                <p class="mb-2">Your file has been generated and is downloading automatically...</p>
+                <small>If download doesn't start automatically, please click the download button below</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completion animation area -->
+    <div id="completionSection" class="row justify-content-center mt-4" style="display:none;">
+        <div class="col-12 d-flex justify-content-center">
+            <div class="completion-section">
+                <div class="completion-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h4 class="text-success mb-3">Generation Complete!</h4>
+                <p class="text-muted">Your file is ready</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result section -->
+    <div id="resultSection" class="row justify-content-center mt-4" style="display:none;">
+        <div class="col-12">
+            <div class="result-container">
+                <div class="result-card">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <h4 class="text-success mb-3">File Generation Complete!</h4>
+                        <p class="text-muted mb-0">Your file has been successfully generated. Please click the button below to download the result file.</p>
+                    </div>
+
+                    <div class="download-button-group">
+                        <a id="downloadLink" href="#" class="btn btn-success btn-lg download-pulse">
+                            <i class="fas fa-download me-2"></i>Download Result File
+                        </a>
+                        <button type="button" class="btn btn-outline-primary btn-lg" onclick="resetForm()">
+                            <i class="fas fa-redo me-2"></i>Start Over
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error section -->
+    <div id="errorSection" class="row justify-content-center mt-4" style="display:none;">
+        <div class="col-lg-8">
+            <div class="alert alert-danger" role="alert">
+                <h5><i class="fas fa-exclamation-triangle"></i> Execution Failed</h5>
+                <p id="errorMessage" class="mb-3">An unknown error occurred, please try again later.</p>
+                <div class="text-center">
+                    <button type="button" class="btn btn-outline-danger" onclick="resetForm()">
+                        <i class="fas fa-redo"></i> Try Again
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification container -->
+<div id="notificationContainer"></div>
+
+<script>
+    // Global variables
+    let selectedMode = 'Structural';
+    let selectedFiles = [];
+    let processingStartTime = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        setupModeSelection();
+        setupFileUpload();
+        setupFormSubmission();
+        setupCopyPromptFunction();
+        setupCustomPrompt(); // Setup custom prompt functionality
+        requestNotificationPermission();
+
+        console.log('✅ LATGA frontend initialized (with Customed Prompt support)');
+    });
+
+    // Setup custom prompt functionality
+    function setupCustomPrompt() {
+        const toggleBtn = document.getElementById('toggleCustomPromptBtn');
+        const customPromptArea = document.getElementById('customPromptArea');
+        const toggleIcon = document.getElementById('toggleIcon');
+        const toggleText = document.getElementById('toggleText');
+        let isEnabled = false;
+
+        toggleBtn.addEventListener('click', function() {
+            isEnabled = !isEnabled;
+
+            if (isEnabled) {
+                // Show custom prompt area
+                customPromptArea.style.display = 'block';
+                customPromptArea.classList.remove('hiding');
+                customPromptArea.classList.add('show');
+
+                // Update button UI
+                toggleIcon.className = 'fas fa-minus me-2';
+                toggleText.textContent = 'Remove Custom Prompt';
+                toggleBtn.className = 'btn btn-success btn-toggle-prompt';
+
+                console.log('✅ Customed prompt enabled');
+            } else {
+                // Hide custom prompt area with animation
+                customPromptArea.classList.add('hiding');
+                customPromptArea.classList.remove('show');
+
+                setTimeout(() => {
+                    customPromptArea.style.display = 'none';
+                    customPromptArea.classList.remove('hiding');
+                }, 300);
+
+                // Update button UI
+                toggleIcon.className = 'fas fa-plus me-2';
+                toggleText.textContent = 'Add Custom Prompt';
+                toggleBtn.className = 'btn btn-outline-primary btn-toggle-prompt';
+
+                // Clear the textarea
+                document.getElementById('customPrompt').value = '';
+
+                console.log('❌ Customed prompt disabled');
+            }
+        });
+    }
+
+    // Setup copy prompt functionality
+    function setupCopyPromptFunction() {
+        const copyBtn = document.getElementById('copyPromptBtn');
+        const promptText = document.getElementById('promptText');
+        const copyBtnText = document.getElementById('copyBtnText');
+
+        if (copyBtn && promptText) {
+            copyBtn.addEventListener('click', function() {
+                const textToCopy = promptText.textContent.trim();
+
+                // Use Clipboard API for copying
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        showCopySuccess();
+                    }).catch(err => {
+                        console.error('Copy failed:', err);
+                        fallbackCopyTextToClipboard(textToCopy);
+                    });
+                } else {
+                    // Fallback method: use execCommand
+                    fallbackCopyTextToClipboard(textToCopy);
+                }
+
+                function showCopySuccess() {
+                    // Show success animation
+                    copyBtn.classList.add('copied');
+                    copyBtnText.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+
+                    // Show notification
+                    showNotification('Copy Successful', 'Prompt has been copied to clipboard', 'success');
+
+                    // Restore original state after 2 seconds
+                    setTimeout(() => {
+                        copyBtn.classList.remove('copied');
+                        copyBtnText.innerHTML = '<i class="fas fa-copy me-1"></i>Copy Prompt';
+                    }, 2000);
+                }
+
+                function fallbackCopyTextToClipboard(text) {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+
+                    try {
+                        const successful = document.execCommand('copy');
+                        if (successful) {
+                            showCopySuccess();
+                        } else {
+                            showNotification('Copy Failed', 'Please manually select and copy the text', 'error');
+                        }
+                    } catch (err) {
+                        console.error('Fallback copy method failed:', err);
+                        showNotification('Copy Failed', 'Your browser does not support automatic copying, please copy manually', 'error');
+                    }
+
+                    document.body.removeChild(textArea);
+                }
+            });
+        }
+    }
+
+    // Mode selection setup
+    function setupModeSelection() {
+        const modeCards = document.querySelectorAll('[data-mode]');
+        const modeInput = document.getElementById('selectedMode');
+        const fileSupportInfo = document.getElementById('fileSupportInfo');
+        const claudeSection = document.getElementById('claudeAISection');
+
+        // Default select Structural mode
+        const StructuralCard = document.querySelector('[data-mode="Structural"]');
+        if (StructuralCard) {
+            StructuralCard.classList.add('selected');
+        }
+
+        modeCards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove all selected states
+                modeCards.forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+
+                selectedMode = this.dataset.mode;
+                modeInput.value = selectedMode;
+
+                // Update UI based on mode
+                updateUIForMode(selectedMode, fileSupportInfo, claudeSection);
+
+                console.log('🔄 Mode switched to:', selectedMode);
+            });
+        });
+    }
+
+    function updateUIForMode(mode, fileSupportInfo, claudeSection) {
+        switch(mode) {
+            case 'editorgpt':
+                fileSupportInfo.textContent = '(Supported: .JSON, .YAML - Swagger Documents)';
+                if (claudeSection) claudeSection.style.display = 'none';
+                break;
+            case 'karate-merger':
+                fileSupportInfo.textContent = '(Supported: .feature - Karate Test Files)';
+                if (claudeSection) claudeSection.style.display = 'none';
+                break;
+            case 'Structural':
+                fileSupportInfo.textContent = '(Supported: .JSON, .YAML, .dot)';
+                if (claudeSection) claudeSection.style.display = 'none';
+                break;
+            case 'Behavior':
+                fileSupportInfo.textContent = '(Supported: .JSON, .YAML, .dot, web frontend)';
+                if (claudeSection) claudeSection.style.display = 'block';
+                break;
+            default:
+                fileSupportInfo.textContent = '(Supports multiple formats)';
+                if (claudeSection) claudeSection.style.display = 'none';
+        }
+    }
+
+    // Form submission handling
+    function setupFormSubmission() {
+        const form = document.getElementById('latgaForm');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            const files = document.getElementById('files').files;
+
+            if (files.length === 0) {
+                showNotification('Error', 'Please select at least one file', 'error');
+                return;
+            }
+
+            // Special validation for Karate merge mode
+            if (selectedMode === 'karate-merger') {
+                if (files.length < 2) {
+                    showNotification('Error', 'Karate merge mode requires at least two .feature files', 'error');
+                    return;
+                }
+
+                // Check file format
+                for (let i = 0; i < files.length; i++) {
+                    if (!files[i].name.toLowerCase().endsWith('.feature')) {
+                        showNotification('Error', 'Karate merge mode only supports .feature files', 'error');
+                        return;
+                    }
+                }
+            }
+
+            console.log('🚀 Starting form submission...');
+            console.log('   File count:', files.length);
+            console.log('   Mode:', selectedMode);
+
+            // Prepare form data
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+                console.log(`   File ${i + 1}: ${files[i].name} (${files[i].size} bytes)`);
+            }
+            formData.append('mode', selectedMode);
+
+            // Add custom prompt support
+            const customPrompt = document.getElementById('customPrompt').value.trim();
+
+            if (customPrompt) {
+                formData.append('customPrompt', customPrompt);
+                console.log('📝 Including custom prompt:', customPrompt.substring(0, 100) + '...');
+            }
+
+            // Show processing interface
+            showProcessingOverlay();
+            startSimulatedProgress();
+
+            const requestStartTime = Date.now();
+            console.log('📤 Sending request to backend...', new Date().toISOString());
+
+            // Send request
+            fetch('/api/latga/run', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    const requestTime = Date.now() - requestStartTime;
+                    console.log(`📥 Received response, time taken: ${requestTime}ms`);
+                    console.log('   Status code:', response.status);
+
+                    const executionId = response.headers.get('X-Execution-ID');
+                    const processingTime = response.headers.get('X-Processing-Time');
+                    const generatedFiles = response.headers.get('X-Generated-Files');
+
+                    if (response.ok) {
+                        console.log('✅ Request successful, starting blob processing...');
+                        return response.blob().then(blob => {
+                            return { blob, executionId, processingTime, generatedFiles };
+                        });
+                    } else {
+                        return response.text().then(text => {
+                            throw new Error(`Server error (${response.status}): ${text}`);
+                        });
+                    }
+                })
+                .then(({ blob, executionId, processingTime, generatedFiles }) => {
+                    handleSuccessCallback(blob, { executionId, processingTime, generatedFiles });
+                })
+                .catch(error => {
+                    console.error('❌ Request failed:', error);
+                    handleErrorCallback(error.message, {
+                        requestTime: Date.now() - requestStartTime
+                    });
+                });
+        });
+    }
+
+    // Success handling callback
+    function handleSuccessCallback(blob, metadata) {
+        console.log('🎉 Processing success callback...');
+
+        clearProgress();
+        updateProgress(100, 'Processing complete! Preparing download...');
+
+        // Generate appropriate filename based on mode
+        let fileName;
+        const timestamp = getCurrentTimestamp();
+
+        switch(selectedMode) {
+            case 'editorgpt':
+                fileName = `enhanced_swagger_${timestamp}.json`;
+                break;
+            case 'karate-merger':
+                fileName = `merged_karate_${timestamp}.feature`;
+                break;
+            case 'Structural':
+            case 'Behavior':
+                if (blob.type === 'text/plain' || blob.type.includes('text/')) {
+                    fileName = `karate_test_${selectedMode}_${timestamp}.feature`;
+                } else {
+                    fileName = `latga_result_${selectedMode}_${timestamp}.zip`;
+                }
+                break;
+            default:
+                fileName = `result_${selectedMode}_${timestamp}.txt`;
+        }
+
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const downloadLink = document.getElementById('downloadLink');
+        if (downloadLink) {
+            downloadLink.href = url;
+            downloadLink.download = fileName;
+        }
+
+        setTimeout(() => {
+            hideProcessingOverlay();
+            showAutoDownloadNotice();
+            triggerBrowserDownload(url, fileName);
+
+            setTimeout(() => {
+                showCompletionAnimation(metadata, fileName);
+            }, 1500);
+        }, 1000);
+    }
+
+    function handleErrorCallback(errorMessage) {
+        console.log('❌ Processing error callback:', errorMessage);
+
+        clearProgress();
+        hideProcessingOverlay();
+
+        const errorSection = document.getElementById('errorSection');
+        const errorMessageElement = document.getElementById('errorMessage');
+
+        if (errorMessageElement) {
+            errorMessageElement.innerHTML = `
+                <strong>Execution Failed</strong><br>
+                ${errorMessage.replace(/\n/g, '<br>')}
+                <br><br>
+                <small class="text-muted">
+                    Troubleshooting suggestions:<br>
+                    • Confirm file format is correct<br>
+                    • Check if file content is complete<br>
+                    • EditorGPT mode requires valid Swagger documents<br>
+                    • Karate merge mode requires at least two .feature files<br>
+                </small>
+            `;
+        }
+
+        if (errorSection) {
+            errorSection.style.display = 'block';
+        }
+
+        showNotification('Execution Failed', errorMessage, 'error');
+    }
+
+    // Other helper functions remain the same...
+    function showProcessingOverlay() {
+        const overlay = document.getElementById('processingOverlay');
+        const message = document.getElementById('processingMessage');
+
+        hideAllSections();
+        overlay.style.display = 'flex';
+
+        // Set different processing messages based on mode
+        const customPrompt = document.getElementById('customPrompt').value.trim();
+        const hasCustomPrompt = customPrompt.length > 0;
+
+        let baseMessage;
+        switch(selectedMode) {
+            case 'editorgpt':
+                baseMessage = 'Using AI to analyze and enhance Swagger document...';
+                break;
+            case 'karate-merger':
+                baseMessage = 'Intelligently merging Karate test files...';
+                break;
+            case 'Structural':
+            case 'Behavior':
+                baseMessage = 'Analyzing files and generating Karate test cases...';
+                break;
+            default:
+                baseMessage = 'Processing files...';
+        }
+
+        if (hasCustomPrompt) {
+            message.textContent = baseMessage + ' (with custom instructions)';
+        } else {
+            message.textContent = baseMessage;
+        }
+
+        processingStartTime = Date.now();
+        console.log('🔄 Showing processing interface');
+    }
+
+    function startSimulatedProgress() {
+        const progressBar = document.getElementById('simpleProgressBar');
+        const message = document.getElementById('processingMessage');
+
+        let progress = 0;
+        let stage = 0;
+
+        // Check if custom prompt is enabled
+        const customPrompt = document.getElementById('customPrompt').value.trim();
+        const hasCustomPrompt = customPrompt.length > 0;
+
+        // Set different progress stages based on mode
+        let stages;
+        switch(selectedMode) {
+            case 'editorgpt':
+                stages = [
+                    { text: 'Uploading Swagger file...', max: 15 },
+                    { text: hasCustomPrompt ? 'Processing custom instructions...' : 'Analyzing API structure...', max: 30 },
+                    { text: 'AI generating test parameters...', max: 60 },
+                    { text: 'Performing intelligent merge...', max: 85 },
+                    { text: 'Optimizing output format...', max: 95 }
+                ];
+                break;
+            case 'karate-merger':
+                stages = [
+                    { text: 'Uploading Karate files...', max: 20 },
+                    { text: hasCustomPrompt ? 'Applying custom merge strategy...' : 'Analyzing file structure...', max: 40 },
+                    { text: 'Intelligently merging content...', max: 65 },
+                    { text: 'Processing duplicate items...', max: 80 },
+                    { text: 'Performing syntax validation...', max: 95 }
+                ];
+                break;
+            default:
+                stages = [
+                    { text: 'Uploading files...', max: 15 },
+                    { text: hasCustomPrompt ? 'Processing custom instructions...' : 'Analyzing file content...', max: 30 },
+                    { text: 'AI generating test cases...', max: 80 },
+                    { text: 'Performing quality check...', max: 90 },
+                    { text: 'Packaging result files...', max: 95 }
+                ];
+        }
+
+        const progressInterval = setInterval(() => {
+            if (stage < stages.length) {
+                const currentStage = stages[stage];
+                message.textContent = currentStage.text;
+
+                if (progress < currentStage.max) {
+                    progress += Math.random() * 2 + 0.5;
+                    progressBar.style.width = Math.min(progress, currentStage.max) + '%';
+                } else {
+                    stage++;
+                }
+            } else if (progress < 98) {
+                progress += 0.2;
+                progressBar.style.width = progress + '%';
+                message.textContent = 'Almost complete...';
+            }
+        }, 500);
+
+        window.progressInterval = progressInterval;
+    }
+
+    // Other helper functions
+    function setupFileUpload() {
+        const fileInput = document.getElementById('files');
+        const dropZone = document.getElementById('fileDropZone');
+        const selectedFilesDiv = document.getElementById('selectedFiles');
+        const fileList = document.getElementById('fileList');
+
+        fileInput.addEventListener('change', function(e) {
+            handleFiles(e.target.files);
+        });
+
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            fileInput.files = files;
+            handleFiles(files);
+        });
+
+        function handleFiles(files) {
+            const fileInput = document.getElementById('files');
+            const dt = new DataTransfer();
+            Array.from(files).forEach(file => dt.items.add(file));
+            fileInput.files = dt.files;
+            updateFileDisplay();
+            console.log('📁 File processing complete, file count:', files.length);
+        }
+    }
+
+    function removeFile(index) {
+        console.log('🗑️ Removing file index:', index);
+        const dt = new DataTransfer();
+        const files = document.getElementById('files').files;
+
+        for (let i = 0; i < files.length; i++) {
+            if (i !== index) {
+                dt.items.add(files[i]);
+            }
+        }
+
+        document.getElementById('files').files = dt.files;
+        selectedFiles.splice(index, 1);
+        updateFileDisplay();
+        console.log('✅ File removed, remaining files:', selectedFiles.length);
+    }
+
+    function updateFileDisplay() {
+        const selectedFilesDiv = document.getElementById('selectedFiles');
+        const fileList = document.getElementById('fileList');
+        const files = document.getElementById('files').files;
+
+        if (files.length > 0) {
+            selectedFilesDiv.style.display = 'block';
+            fileList.innerHTML = '';
+
+            Array.from(files).forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                fileItem.innerHTML = `
+                    <div>
+                        <i class="fas fa-file text-muted me-2"></i>
+                        <strong>${file.name}</strong>
+                        <small class="text-muted ms-2">(${formatFileSize(file.size)})</small>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+
+            selectedFiles = Array.from(files);
+        } else {
+            selectedFilesDiv.style.display = 'none';
+            selectedFiles = [];
+        }
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function getCurrentTimestamp() {
+        return new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    }
+
+    function hideProcessingOverlay() {
+        const overlay = document.getElementById('processingOverlay');
+        if (overlay) overlay.style.display = 'none';
+    }
+
+    function hideAllSections() {
+        const sections = ['autoDownloadNotice', 'completionSection', 'resultSection', 'errorSection'];
+        sections.forEach(sectionId => {
+            const section = document.getElementById(sectionId);
+            if (section) section.style.display = 'none';
+        });
+    }
+
+    function showAutoDownloadNotice() {
+        const notice = document.getElementById('autoDownloadNotice');
+        if (notice) {
+            notice.style.display = 'block';
+            console.log('📢 Showing auto download notice');
+        }
+    }
+
+    function triggerBrowserDownload(downloadUrl, filename) {
+        try {
+            console.log('📥 Attempting to trigger auto download:', filename);
+            const tempLink = document.createElement('a');
+            tempLink.href = downloadUrl;
+            tempLink.download = filename;
+            tempLink.style.display = 'none';
+            document.body.appendChild(tempLink);
+            setTimeout(() => {
+                tempLink.click();
+                document.body.removeChild(tempLink);
+                console.log('✅ Auto download triggered');
+            }, 100);
+        } catch (error) {
+            console.log('❌ Auto download failed:', error.message);
+            showNotification('Please download manually', 'Auto download failed, please click the download button to download manually', 'warning');
+        }
+    }
+
+    function showCompletionAnimation(metadata, fileName) {
+        const autoDownloadNotice = document.getElementById('autoDownloadNotice');
+        const completionSection = document.getElementById('completionSection');
+        const resultSection = document.getElementById('resultSection');
+
+        if (autoDownloadNotice) autoDownloadNotice.style.display = 'none';
+        if (completionSection) {
+            completionSection.style.display = 'block';
+            console.log('🎬 Showing completion animation');
+        }
+
+        const totalTime = processingStartTime ?
+            Math.round((Date.now() - processingStartTime) / 1000) : 0;
+
+        let fileTypeDescription = '';
+        switch(selectedMode) {
+            case 'editorgpt':
+                fileTypeDescription = 'Enhanced Swagger document (.json)';
+                break;
+            case 'karate-merger':
+                fileTypeDescription = 'Merged Karate test file (.feature)';
+                break;
+            default:
+                if (fileName && fileName.endsWith('.feature')) {
+                    fileTypeDescription = 'Karate test case file (.feature)';
+                } else {
+                    fileTypeDescription = 'Test result file';
+                }
+        }
+
+        // Check if custom prompt was used
+        const customPrompt = document.getElementById('customPrompt').value.trim();
+        const hasCustomPrompt = customPrompt.length > 0;
+
+        let message = `${fileTypeDescription} is ready and download started!\n` +
+            `Processing time: ${totalTime} seconds\n` +
+            `Generated files: ${metadata.generatedFiles || 1}`;
+
+        if (hasCustomPrompt) {
+            message += `\nUsed custom instructions: ${customPrompt.substring(0, 50)}...`;
+        }
+
+        showNotification('Generation Complete!', message, 'success');
+        console.log(`🎯 Processing complete - Total time: ${totalTime} seconds, File: ${fileName}, Custom prompt: ${hasCustomPrompt}`);
+
+        setTimeout(() => {
+            if (completionSection) completionSection.style.display = 'none';
+            if (resultSection) {
+                resultSection.style.display = 'block';
+                const resultCard = resultSection.querySelector('.result-card');
+                if (resultCard) {
+                    const messageElement = resultCard.querySelector('p');
+                    if (messageElement) {
+                        // Re-check custom prompt status for this specific context
+                        const customPromptForDisplay = document.getElementById('customPrompt').value.trim();
+                        const hasCustomPromptForDisplay = customPromptForDisplay.length > 0;
+
+                        let baseMessage;
+                        switch(selectedMode) {
+                            case 'editorgpt':
+                                baseMessage = `Your <strong>Swagger document</strong> has been successfully enhanced. Please click the button below to download the <strong>enhanced version</strong>.`;
+                                break;
+                            case 'karate-merger':
+                                baseMessage = `Your <strong>Karate test files</strong> have been successfully merged. Please click the button below to download the <strong>merged version</strong>.`;
+                                break;
+                            default:
+                                if (fileName && fileName.endsWith('.feature')) {
+                                    baseMessage = `Your <strong>Karate test cases</strong> have been successfully generated. Please click the button below to download the <strong>.feature</strong> file.`;
+                                } else {
+                                    baseMessage = `Your test results have been successfully generated. Please click the button below to download the file.`;
+                                }
+                        }
+
+                        if (hasCustomPromptForDisplay) {
+                            baseMessage += `<br><small class="text-muted"><i class="fas fa-info-circle"></i> Generated with your custom instructions applied.</small>`;
+                        }
+
+                        messageElement.innerHTML = baseMessage;
+                    }
+                }
+            }
+        }, 3000);
+    }
+
+    function clearProgress() {
+        if (window.progressInterval) {
+            clearInterval(window.progressInterval);
+            window.progressInterval = null;
+            console.log('🧹 Progress simulation cleared');
+        }
+    }
+
+    function updateProgress(percentage, message) {
+        const progressBar = document.getElementById('simpleProgressBar');
+        const messageElement = document.getElementById('processingMessage');
+
+        if (progressBar) {
+            progressBar.style.width = Math.min(percentage, 100) + '%';
+        }
+
+        if (messageElement) {
+            messageElement.textContent = message;
+        }
+
+        console.log(`📊 Progress update: ${percentage}% - ${message}`);
+    }
+
+    function requestNotificationPermission() {
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    showNotification('Notifications Enabled', 'You will receive notifications when processing is complete', 'success');
+                }
+            });
+        }
+    }
+
+    function showNotification(title, message, type = 'success') {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            const notification = new Notification(title, {
+                body: message,
+                icon: type === 'success' ? '/favicon.ico' : null,
+                badge: '/favicon.ico'
+            });
+            setTimeout(() => notification.close(), 3000);
+        }
+
+        const notificationDiv = document.createElement('div');
+        notificationDiv.className = `notification ${type}`;
+        notificationDiv.innerHTML = `
+            <div>
+                <strong>${title}</strong><br>
+                <small>${message}</small>
+            </div>
+            <button type="button" class="btn-close btn-close-white ms-3" onclick="this.parentElement.remove()"></button>
+        `;
+
+        const container = document.getElementById('notificationContainer');
+        if (container) {
+            container.appendChild(notificationDiv);
+            setTimeout(() => notificationDiv.classList.add('show'), 100);
+            setTimeout(() => {
+                notificationDiv.classList.remove('show');
+                setTimeout(() => notificationDiv.remove(), 500);
+            }, 5000);
+        }
+    }
+
+    function resetForm() {
+        if (window.progressInterval) {
+            clearInterval(window.progressInterval);
+        }
+
+        document.getElementById('latgaForm').reset();
+        document.getElementById('processingOverlay').style.display = 'none';
+        hideAllSections();
+
+        const selectedFilesDiv = document.getElementById('selectedFiles');
+        const fileList = document.getElementById('fileList');
+        if (selectedFilesDiv) selectedFilesDiv.style.display = 'none';
+        if (fileList) fileList.innerHTML = '';
+
+        const claudeSection = document.getElementById('claudeAISection');
+        if (claudeSection) claudeSection.style.display = 'none';
+
+        // Reset custom prompt area
+        const toggleBtn = document.getElementById('toggleCustomPromptBtn');
+        const customPromptArea = document.getElementById('customPromptArea');
+        const toggleIcon = document.getElementById('toggleIcon');
+        const toggleText = document.getElementById('toggleText');
+
+        if (customPromptArea) customPromptArea.style.display = 'none';
+        if (toggleIcon) toggleIcon.className = 'fas fa-plus me-2';
+        if (toggleText) toggleText.textContent = 'Add Custom Prompt';
+        if (toggleBtn) toggleBtn.className = 'btn btn-outline-primary btn-toggle-prompt';
+        document.getElementById('customPrompt').value = '';
+
+        document.querySelectorAll('[data-mode]').forEach(card => card.classList.remove('selected'));
+        const StructuralCard = document.querySelector('[data-mode="Structural"]');
+        if (StructuralCard) StructuralCard.classList.add('selected');
+
+        document.getElementById('selectedMode').value = 'Structural';
+        selectedMode = 'Structural';
+        selectedFiles = [];
+
+        const fileSupportInfo = document.getElementById('fileSupportInfo');
+        if (fileSupportInfo) {
+            fileSupportInfo.textContent = '(Supported: .JSON, .YAML, .dot)';
+        }
+
+        console.log('🔄 Form reset (including custom prompt)');
+    }
+</script>
+</body>
+</html>

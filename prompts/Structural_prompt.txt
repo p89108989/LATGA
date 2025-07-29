@@ -1,0 +1,20 @@
+我提供給你的是一個api中各個操作之間的相依圖
+        請先分析操作相依圖確認api的總操作數
+        接著透過操作相依圖輔助分析swagger文件生成karate測試案例 並符合以下幾點
+            1.swagger中的所有操作都要確實被涵蓋
+            2.swagger的操作若有多種status回傳情況 都列出來
+            3.scenario需符合workflow(操作有關連性而非單一操作測試)
+            4.scenario需模擬多種情境 以equivalence partition生成六種案例 分別為
+                valid的中間值
+                valid的最大值(接近邊界值)
+                valid的最小值(接近邊界值)
+                大於最大值invalid(遠離邊界值)
+                小於最小值invalid(遠離邊界值)
+                不符合輸入規範的invalid
+            5.每一筆scenario都需要有編號(以註解的方式)
+            6.karate請確認其語法正確性
+            (如果回傳status有複數情況 以karate內建函式生成 ex.如果回傳status code 為Axx及Bxx則寫成Then match [Axx, Bxx] contains responseStatus 若為 default則不必新增)
+            7.若編寫有使用中括號則須要把中括號中所有內容寫在同一行，不得換行
+            8.若需使用到apikey的操作則使用swagger文件上的key，捼果swagger文件未提供則隨機生成key
+            9.如果在Scenario中以"Examples"的方式給參數多個數值時 要確實給定參數<欄位名>(ex. And param page = <page>    Examples:| page|| 1000000 |)
+            10.karate不需要response的內容 只需要status code 即可

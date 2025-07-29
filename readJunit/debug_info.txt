@@ -1,0 +1,4 @@
+提取的基礎 URL: https://date.nager.at
+找到 Response 行: Response response0 = request0.when().get(baseURL+"/api/v3/CountryInfo/{countryCode}");
+提取的端點: /api/v3/CountryInfo/{countryCode}
+構建的完整 URL: https://date.nager.at/api/v3/CountryInfo/{countryCode}

@@ -79,7 +79,7 @@ public class JUnitToKarateConverter {
 
         // === 檔案選擇區域 ===
         JPanel filePanel = new JPanel(new BorderLayout(5, 5));
-        filePanel.setBorder(new TitledBorder("📁 選擇 JUnit 檔案"));
+        filePanel.setBorder(new TitledBorder(" 選擇 JUnit 檔案"));
 
         DefaultListModel<String> fileListModel = new DefaultListModel<>();
         for (String file : config.sourceFiles) {
@@ -92,9 +92,9 @@ public class JUnitToKarateConverter {
         fileScrollPane.setPreferredSize(new Dimension(400, 120));
 
         JPanel fileButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JButton addFilesBtn = new JButton("📁 新增檔案");
+        JButton addFilesBtn = new JButton(" 新增檔案");
         JButton removeFilesBtn = new JButton("🗑️ 移除選取");
-        JButton clearAllBtn = new JButton("🧹 清空全部");
+        JButton clearAllBtn = new JButton(" 清空全部");
 
         addFilesBtn.addActionListener(e -> {
             List<String> newFiles = showJUnitFileChooser();
@@ -131,8 +131,8 @@ public class JUnitToKarateConverter {
         modePanel.setBorder(new TitledBorder("⚙️ 輸出模式"));
 
         ButtonGroup modeGroup = new ButtonGroup();
-        JRadioButton singleFileRadio = new JRadioButton("🗂️ 合併為單一 Karate 檔案", true);
-        JRadioButton multiFileRadio = new JRadioButton("📄 每個 JUnit 產生個別 Karate 檔案", false);
+        JRadioButton singleFileRadio = new JRadioButton(" 合併為單一 Karate 檔案", true);
+        JRadioButton multiFileRadio = new JRadioButton(" 每個 JUnit 產生個別 Karate 檔案", false);
 
         modeGroup.add(singleFileRadio);
         modeGroup.add(multiFileRadio);
@@ -144,7 +144,7 @@ public class JUnitToKarateConverter {
 
         // === 檔名設定區域 ===
         JPanel namePanel = new JPanel(new BorderLayout(5, 5));
-        namePanel.setBorder(new TitledBorder("📝 檔名設定"));
+        namePanel.setBorder(new TitledBorder(" 檔名設定"));
 
         // 單一檔案模式的設定
         JPanel singleNamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -218,10 +218,10 @@ public class JUnitToKarateConverter {
 
         // === 輸出目錄選擇 ===
         JPanel outputPanel = new JPanel(new BorderLayout(5, 5));
-        outputPanel.setBorder(new TitledBorder("📂 輸出目錄"));
+        outputPanel.setBorder(new TitledBorder(" 輸出目錄"));
 
         JTextField outputDirField = new JTextField("", 25);
-        JButton browseDirBtn = new JButton("📁 瀏覽");
+        JButton browseDirBtn = new JButton(" 瀏覽");
 
         browseDirBtn.addActionListener(e -> {
             JFileChooser dirChooser = new JFileChooser();
@@ -245,8 +245,8 @@ public class JUnitToKarateConverter {
 
         // === 按鈕區域 ===
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton okButton = new JButton("✅ 開始轉換");
-        JButton cancelButton = new JButton("❌ 取消");
+        JButton okButton = new JButton(" 開始轉換");
+        JButton cancelButton = new JButton(" 取消");
 
         final boolean[] confirmed = {false};
 

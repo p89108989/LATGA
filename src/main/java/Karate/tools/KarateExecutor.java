@@ -33,7 +33,7 @@ public class KarateExecutor {
         private boolean verboseOutput = false;
         private String javaCommand = "java";
         private List<String> additionalJvmArgs = new ArrayList<>();
-        private ExecutionMode executionMode = ExecutionMode.AUTO_DETECT; // 🆕 執行模式
+        private ExecutionMode executionMode = ExecutionMode.AUTO_DETECT; //  執行模式
 
         public ExecutorConfig() {
             // 添加一些常用的JVM參數
@@ -66,7 +66,7 @@ public class KarateExecutor {
     }
 
     /**
-     * 🆕 執行模式枚舉
+     *  執行模式枚舉
      */
     public enum ExecutionMode {
         AUTO_DETECT,    // 自動偵測最佳執行方式
@@ -88,7 +88,7 @@ public class KarateExecutor {
         private final List<String> syntaxErrors;
         private final List<String> warnings;
         private final String tempDirectoryPath;
-        private final ExecutionMode usedExecutionMode; // 🆕 實際使用的執行模式
+        private final ExecutionMode usedExecutionMode; //  實際使用的執行模式
 
         private ExecutionResult(Builder builder) {
             this.syntaxValid = builder.syntaxValid;
@@ -121,11 +121,11 @@ public class KarateExecutor {
         public String getSummary() {
             String modeInfo = usedExecutionMode != null ? " [" + usedExecutionMode + "]" : "";
             if (syntaxValid && executionSuccessful) {
-                return String.format("✅ 執行驗證通過 (執行時間: %dms)%s", executionTimeMillis, modeInfo);
+                return String.format(" 執行驗證通過 (執行時間: %dms)%s", executionTimeMillis, modeInfo);
             } else if (!syntaxValid) {
-                return String.format("❌ 語法錯誤 (%d個錯誤)%s", syntaxErrors.size(), modeInfo);
+                return String.format(" 語法錯誤 (%d個錯誤)%s", syntaxErrors.size(), modeInfo);
             } else {
-                return String.format("⚠️ 語法正確但執行失敗 (退出碼: %d)%s", exitCode, modeInfo);
+                return String.format(" 語法正確但執行失敗 (退出碼: %d)%s", exitCode, modeInfo);
             }
         }
 
@@ -181,7 +181,7 @@ public class KarateExecutor {
             tempDir = createTempDirectory(testName);
             Path featureFile = writeKarateFile(tempDir, karateContent, testName);
 
-            // 🆕 選擇最佳的執行模式
+            //  選擇最佳的執行模式
             ExecutionMode selectedMode = selectExecutionMode();
             ExecutionResult result = executeKarateTest(tempDir, featureFile, selectedMode);
 
@@ -217,7 +217,7 @@ public class KarateExecutor {
     }
 
     /**
-     * 🆕 選擇最佳的執行模式
+     *  選擇最佳的執行模式
      */
     private ExecutionMode selectExecutionMode() {
         if (config.getExecutionMode() != ExecutionMode.AUTO_DETECT) {
@@ -242,7 +242,7 @@ public class KarateExecutor {
     }
 
     /**
-     * 🆕 檢查Karate是否在classpath上
+     *  檢查Karate是否在classpath上
      */
     private boolean isKarateOnClasspath() {
         try {
@@ -254,7 +254,7 @@ public class KarateExecutor {
     }
 
     /**
-     * 🆕 檢查外部JAR是否可用
+     *  檢查外部JAR是否可用
      */
     private boolean isExternalJarAvailable() {
         if (config.getKarateJarPath().isEmpty()) {
@@ -277,7 +277,7 @@ public class KarateExecutor {
     }
 
     /**
-     * 🆕 檢查Maven是否可用
+     *  檢查Maven是否可用
      */
     private boolean isMavenAvailable() {
         try {
@@ -341,15 +341,15 @@ public class KarateExecutor {
         info.append("清理臨時檔案: ").append(config.isCleanupTempFiles() ? "是" : "否").append("\n");
         info.append("詳細輸出: ").append(config.isVerboseOutput() ? "是" : "否").append("\n");
 
-        // 🆕 檢查各種執行模式的可用性
-        info.append("\n🔍 執行模式檢查:\n");
-        info.append("   Classpath模式: ").append(isKarateOnClasspath() ? "✅ 可用" : "❌ 不可用").append("\n");
-        info.append("   外部JAR模式: ").append(isExternalJarAvailable() ? "✅ 可用" : "❌ 不可用").append("\n");
-        info.append("   Maven執行模式: ").append(isMavenAvailable() ? "✅ 可用" : "❌ 不可用").append("\n");
+        //  檢查各種執行模式的可用性
+        info.append("\n 執行模式檢查:\n");
+        info.append("   Classpath模式: ").append(isKarateOnClasspath() ? " 可用" : " 不可用").append("\n");
+        info.append("   外部JAR模式: ").append(isExternalJarAvailable() ? " 可用" : " 不可用").append("\n");
+        info.append("   Maven執行模式: ").append(isMavenAvailable() ? " 可用" : " 不可用").append("\n");
 
         ExecutionMode selectedMode = selectExecutionMode();
-        info.append("\n🎯 選定執行模式: ").append(selectedMode).append("\n");
-        info.append("🚀 整體可用性: ").append(isKarateAvailable() ? "✅ 可用" : "❌ 不可用").append("\n");
+        info.append("\n 選定執行模式: ").append(selectedMode).append("\n");
+        info.append(" 整體可用性: ").append(isKarateAvailable() ? " 可用" : " 不可用").append("\n");
 
         return info.toString();
     }
@@ -384,7 +384,7 @@ public class KarateExecutor {
     }
 
     /**
-     * 🆕 根據執行模式執行Karate測試
+     *  根據執行模式執行Karate測試
      */
     private ExecutionResult executeKarateTest(Path tempDir, Path featureFile, ExecutionMode mode)
             throws IOException, InterruptedException {
@@ -442,7 +442,7 @@ public class KarateExecutor {
     }
 
     /**
-     * 🆕 構建classpath執行命令
+     *  構建classpath執行命令
      */
     private List<String> buildClasspathCommand(Path featureFile) {
         List<String> command = new ArrayList<>();
@@ -458,7 +458,7 @@ public class KarateExecutor {
     }
 
     /**
-     * 🆕 構建外部JAR執行命令
+     *  構建外部JAR執行命令
      */
     private List<String> buildExternalJarCommand(Path featureFile) {
         List<String> command = new ArrayList<>();
@@ -477,7 +477,7 @@ public class KarateExecutor {
     }
 
     /**
-     * 🆕 構建Maven執行命令
+     *  構建Maven執行命令
      */
     private List<String> buildMavenCommand(Path featureFile) {
         List<String> command = new ArrayList<>();
@@ -490,7 +490,7 @@ public class KarateExecutor {
     }
 
     /**
-     * 🆕 尋找Karate JAR文件
+     *  尋找Karate JAR文件
      */
     private String findKarateJar() {
         if (!config.getKarateJarPath().isEmpty()) {

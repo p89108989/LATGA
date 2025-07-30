@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 🆕 統一的測試案例驗證與質量保證類 - 合併 TestCaseVerification 和 KarateQualityAssurance
+ *  統一的測試案例驗證與質量保證類 - 合併 TestCaseVerification 和 KarateQualityAssurance
  * 提供完整的 Karate 測試驗證、分析、補充和質量保證功能
  *
  * @author StaticBlackbox Team
@@ -23,7 +23,7 @@ public class TestCaseVerification {
     private final KarateExecutor executor; // 執行驗證器
     private final KarateContentExtractor contentExtractor; // 內容提取器
 
-    // 🆕 自定義 Prompt 分隔符
+    //  自定義 Prompt 分隔符
     private static final String CUSTOM_PROMPT_SEPARATOR = "=".repeat(80);
 
     // 驗證相關的Prompt模板
@@ -76,7 +76,7 @@ public class TestCaseVerification {
         4. 覆蓋率百分比
         """;
 
-    // 🆕 內容補充相關的Prompt模板
+    //  內容補充相關的Prompt模板
     private static final String SUPPLEMENT_PROMPT = """
         根據以下分析結果，請補充和完善Karate測試內容：
         
@@ -117,7 +117,7 @@ public class TestCaseVerification {
     // ========== 核心驗證方法 ==========
 
     /**
-     * 🎯 綜合驗證方法 - 執行完整的測試案例驗證（支援比對結果整合）
+     *  綜合驗證方法 - 執行完整的測試案例驗證（支援比對結果整合）
      */
     public ComprehensiveVerificationResult performComprehensiveVerification(
             String karateContent,
@@ -126,7 +126,7 @@ public class TestCaseVerification {
             String comparisonPrompt) {
 
         System.out.println("\n" + "=".repeat(60));
-        System.out.println("🔍 開始綜合測試案例驗證" +
+        System.out.println(" 開始綜合測試案例驗證" +
                 (customPrompt != null && !customPrompt.trim().isEmpty() ? "（含自定義要求）" : "") +
                 (comparisonPrompt != null && !comparisonPrompt.trim().isEmpty() ? "（含比對結果）" : ""));
         System.out.println("=".repeat(60));
@@ -135,58 +135,58 @@ public class TestCaseVerification {
         result.setOriginalContent(karateContent);
 
         try {
-            // 🆕 如果有比對結果提示，先顯示
+            //  如果有比對結果提示，先顯示
             if (comparisonPrompt != null && !comparisonPrompt.trim().isEmpty()) {
-                System.out.println("📊 步驟0：參考正則比對結果...");
+                System.out.println(" 步驟0：參考正則比對結果...");
                 System.out.println("   已整合比對提示到驗證流程");
             }
 
             // 1. 靜態內容分析（整合比對結果）
-            System.out.println("📊 步驟1：執行靜態內容分析...");
+            System.out.println(" 步驟1：執行靜態內容分析...");
             String enhancedPrompt = buildEnhancedCustomPrompt(customPrompt, comparisonPrompt);
             AnalysisResult analysisResult = performStaticAnalysis(karateContent, fileDataList, enhancedPrompt);
             result.setAnalysisResult(analysisResult);
             displayAnalysisResult(analysisResult);
 
             // 2. 語法驗證
-            System.out.println("\n🔤 步驟2：執行語法驗證...");
+            System.out.println("\n 步驟2：執行語法驗證...");
             EnhancedSyntaxValidationResult syntaxResult = performEnhancedSyntaxValidation(karateContent);
             result.setSyntaxResult(syntaxResult);
             displaySyntaxResult(syntaxResult);
 
             // 3. 端點覆蓋分析
-            System.out.println("\n📡 步驟3：執行端點覆蓋分析...");
+            System.out.println("\n 步驟3：執行端點覆蓋分析...");
             EndpointCoverageResult coverageResult = performEndpointCoverageAnalysis(karateContent, fileDataList);
             result.setCoverageResult(coverageResult);
             displayCoverageResult(coverageResult);
 
             // 4. 執行驗證（如果可用）
             if (isExecutionValidationAvailable()) {
-                System.out.println("\n🚀 步驟4：執行runtime驗證...");
+                System.out.println("\n 步驟4：執行runtime驗證...");
                 List<KarateExecutor.ExecutionResult> executionResults = performExecutionValidation(karateContent);
                 result.setExecutionResults(executionResults);
                 displayExecutionResults(executionResults);
             } else {
-                System.out.println("\n⚠️ 步驟4：Karate執行環境不可用，跳過runtime驗證");
+                System.out.println("\n 步驟4：Karate執行環境不可用，跳過runtime驗證");
             }
 
             // 5. 計算整體結果
             result.calculateOverallResult();
 
             System.out.println("\n" + "=".repeat(60));
-            System.out.println("🎯 綜合驗證完成");
+            System.out.println(" 綜合驗證完成");
             if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-                System.out.println("📝 自定義要求已納入驗證考量");
+                System.out.println(" 自定義要求已納入驗證考量");
             }
             if (comparisonPrompt != null && !comparisonPrompt.trim().isEmpty()) {
-                System.out.println("🔍 正則比對結果已整合到驗證流程");
+                System.out.println(" 正則比對結果已整合到驗證流程");
             }
             System.out.println("=".repeat(60));
 
             return result;
 
         } catch (Exception e) {
-            System.err.println("❌ 驗證過程發生錯誤: " + e.getMessage());
+            System.err.println(" 驗證過程發生錯誤: " + e.getMessage());
             result.setError(true);
             result.setErrorMessage(e.getMessage());
             return result;
@@ -209,10 +209,10 @@ public class TestCaseVerification {
         return performComprehensiveVerification(karateContent, fileDataList, null);
     }
 
-    // ========== 🆕 質量保證和內容補充方法 ==========
+    // ==========  質量保證和內容補充方法 ==========
 
     /**
-     * 🔄 自動分析和補充內容流程（支援自定義 Prompt）
+     *  自動分析和補充內容流程（支援自定義 Prompt）
      * @param fileDataList 原始API文件列表
      * @param initialContent 初始生成的Karate內容
      * @param maxIterations 最大補充次數
@@ -224,16 +224,16 @@ public class TestCaseVerification {
                                                        int maxIterations,
                                                        String customPrompt) {
         System.out.println("\n" + "=".repeat(60));
-        System.out.println("🔍 開始自動分析和補充內容流程" +
+        System.out.println(" 開始自動分析和補充內容流程" +
                 (customPrompt != null && !customPrompt.trim().isEmpty() ? "（含自定義指令）" : ""));
         System.out.println("=".repeat(60));
 
-        // 🆕 顯示自定義 Prompt 狀態
+        //  顯示自定義 Prompt 狀態
         if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-            System.out.println("📝 自定義 Prompt: ✅ 已整合 (長度: " + customPrompt.length() + " 字元)");
-            System.out.println("🎯 將在質量保證流程中優先考慮自定義要求");
+            System.out.println(" 自定義 Prompt:  已整合 (長度: " + customPrompt.length() + " 字元)");
+            System.out.println(" 將在質量保證流程中優先考慮自定義要求");
         } else {
-            System.out.println("📝 自定義 Prompt: ❌ 未提供，使用標準質量保證流程");
+            System.out.println(" 自定義 Prompt:  未提供，使用標準質量保證流程");
         }
 
         QualityAssuranceResult result = new QualityAssuranceResult();
@@ -244,7 +244,7 @@ public class TestCaseVerification {
 
         while (iteration < maxIterations) {
             iteration++;
-            System.out.println(String.format("\n📋 第 %d 次分析檢查", iteration));
+            System.out.println(String.format("\n 第 %d 次分析檢查", iteration));
 
             // 進行分析
             AnalysisResult analysisResult = performStaticAnalysis(currentContent, fileDataList, customPrompt);
@@ -253,9 +253,9 @@ public class TestCaseVerification {
             displayAnalysisResult(analysisResult);
 
             if (analysisResult.isCompliant()) {
-                System.out.println("✅ 內容已符合所有要求！");
+                System.out.println(" 內容已符合所有要求！");
                 if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-                    System.out.println("🎯 自定義指令要求已滿足");
+                    System.out.println(" 自定義指令要求已滿足");
                 }
                 result.setSuccess(true);
                 result.setFinalContent(currentContent);
@@ -263,24 +263,24 @@ public class TestCaseVerification {
                 break;
             }
 
-            System.out.println(String.format("🔧 第 %d 次內容補充中...", iteration));
-            // 🆕 使用支援自定義 prompt 的補充方法
+            System.out.println(String.format(" 第 %d 次內容補充中...", iteration));
+            //  使用支援自定義 prompt 的補充方法
             String supplementedContent = supplementContentWithCustomPrompt(currentContent, analysisResult, customPrompt);
 
             if (supplementedContent != null && !supplementedContent.trim().isEmpty()) {
                 currentContent = supplementedContent;
                 result.addSupplementedContent(iteration, supplementedContent);
 
-                System.out.println("✅ 內容補充完成");
+                System.out.println(" 內容補充完成");
                 if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-                    System.out.println("🎯 補充內容已整合自定義指令");
+                    System.out.println(" 補充內容已整合自定義指令");
                 }
                 System.out.println("\n" + "=".repeat(40));
-                System.out.println("🔄 補充後的內容預覽：");
+                System.out.println(" 補充後的內容預覽：");
                 System.out.println("=".repeat(40));
                 System.out.println(getContentPreview(supplementedContent, 500));
             } else {
-                System.out.println("❌ 內容補充失敗，停止嘗試");
+                System.out.println(" 內容補充失敗，停止嘗試");
                 result.setSuccess(false);
                 result.setErrorMessage("內容補充失敗");
                 break;
@@ -288,7 +288,7 @@ public class TestCaseVerification {
         }
 
         if (iteration >= maxIterations) {
-            System.out.println("⚠️  已達到最大補充次數，使用當前最佳版本");
+            System.out.println("  已達到最大補充次數，使用當前最佳版本");
             result.setSuccess(false);
             result.setErrorMessage("達到最大補充次數");
         }
@@ -297,9 +297,9 @@ public class TestCaseVerification {
         result.setCompletedIterations(iteration);
 
         System.out.println("\n" + "=".repeat(60));
-        System.out.println("🎯 內容分析和補充流程完成");
+        System.out.println(" 內容分析和補充流程完成");
         if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-            System.out.println("🎯 自定義指令已完全整合到最終結果中");
+            System.out.println(" 自定義指令已完全整合到最終結果中");
         }
         System.out.println("=".repeat(60));
 
@@ -316,7 +316,7 @@ public class TestCaseVerification {
     }
 
     /**
-     * 🆕 完整的質量保證流程（包含執行驗證）
+     *  完整的質量保證流程（包含執行驗證）
      */
     public EnhancedQualityAssuranceResult analyzeAndSupplementWithExecution(
             List<FileData> fileDataList,
@@ -326,7 +326,7 @@ public class TestCaseVerification {
             String customPrompt) {
 
         System.out.println("\n" + "=".repeat(60));
-        System.out.println("🔍 開始增強質量保證流程" +
+        System.out.println(" 開始增強質量保證流程" +
                 (enableExecutionValidation ? "（包含執行驗證）" : "") +
                 (customPrompt != null && !customPrompt.trim().isEmpty() ? "（含自定義指令）" : ""));
         System.out.println("=".repeat(60));
@@ -337,7 +337,7 @@ public class TestCaseVerification {
         // 2. 綜合驗證
         ComprehensiveVerificationResult verificationResult = null;
         if (enableExecutionValidation) {
-            System.out.println("\n🔍 開始綜合驗證階段...");
+            System.out.println("\n 開始綜合驗證階段...");
             verificationResult = performComprehensiveVerification(
                     staticResult.getFinalContent(), fileDataList, customPrompt);
         }
@@ -369,7 +369,7 @@ public class TestCaseVerification {
     // ========== 個別驗證方法 ==========
 
     /**
-     * 🔍 靜態內容分析
+     *  靜態內容分析
      */
     public AnalysisResult performStaticAnalysis(String karateContent, List<FileData> fileDataList, String customPrompt) {
         try {
@@ -382,14 +382,14 @@ public class TestCaseVerification {
             return parseAnalysisResult(analysisResponse);
 
         } catch (Exception e) {
-            System.err.println("❌ 靜態分析發生錯誤：" + e.getMessage());
+            System.err.println(" 靜態分析發生錯誤：" + e.getMessage());
             return new AnalysisResult(false, "分析過程發生錯誤: " + e.getMessage(),
                     new ArrayList<>(), new ArrayList<>());
         }
     }
 
     /**
-     * 🔤 語法驗證（靜態）
+     *  語法驗證（靜態）
      */
     public SyntaxValidationResult performSyntaxValidation(String karateContent) {
         List<String> errors = new ArrayList<>();
@@ -434,7 +434,7 @@ public class TestCaseVerification {
     }
 
     /**
-     * 🔤 增強的語法驗證（結合靜態和執行）
+     *  增強的語法驗證（結合靜態和執行）
      */
     public EnhancedSyntaxValidationResult performEnhancedSyntaxValidation(String karateContent) {
         // 1. 靜態語法驗證
@@ -452,7 +452,7 @@ public class TestCaseVerification {
     }
 
     /**
-     * 📡 端點覆蓋分析
+     *  端點覆蓋分析
      */
     public EndpointCoverageResult performEndpointCoverageAnalysis(String karateContent, List<FileData> fileDataList) {
         try {
@@ -475,17 +475,17 @@ public class TestCaseVerification {
             return parseEndpointCoverage(coverageResponse, karateContent);
 
         } catch (Exception e) {
-            System.err.println("❌ 端點覆蓋分析發生錯誤：" + e.getMessage());
+            System.err.println(" 端點覆蓋分析發生錯誤：" + e.getMessage());
             return new EndpointCoverageResult(0, 0, new ArrayList<>(), new ArrayList<>(), 0.0);
         }
     }
 
     /**
-     * 🚀 執行驗證
+     *  執行驗證
      */
     public List<KarateExecutor.ExecutionResult> performExecutionValidation(String karateContent) {
         if (!isExecutionValidationAvailable()) {
-            System.out.println("⚠️ Karate執行環境不可用");
+            System.out.println(" Karate執行環境不可用");
             return new ArrayList<>();
         }
 
@@ -495,7 +495,7 @@ public class TestCaseVerification {
                     contentExtractor.extractKarateFeatures(karateContent, true);
 
             if (!extractionResult.isSuccess()) {
-                System.err.println("❌ 無法提取Karate Features進行執行驗證: " + extractionResult.getMessage());
+                System.err.println(" 無法提取Karate Features進行執行驗證: " + extractionResult.getMessage());
                 return new ArrayList<>();
             }
 
@@ -508,7 +508,7 @@ public class TestCaseVerification {
             return executor.validateMultipleSyntax(featureContents);
 
         } catch (Exception e) {
-            System.err.println("❌ 執行驗證發生錯誤: " + e.getMessage());
+            System.err.println(" 執行驗證發生錯誤: " + e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -540,17 +540,17 @@ public class TestCaseVerification {
             return result;
 
         } catch (Exception e) {
-            System.err.println("❌ 快速驗證發生錯誤: " + e.getMessage());
+            System.err.println(" 快速驗證發生錯誤: " + e.getMessage());
             result.setError(true);
             result.setErrorMessage(e.getMessage());
             return result;
         }
     }
 
-    // ========== 🆕 內容補充相關方法 ==========
+    // ==========  內容補充相關方法 ==========
 
     /**
-     * 🆕 支援自定義 Prompt 的內容補充方法
+     *  支援自定義 Prompt 的內容補充方法
      */
     private String supplementContentWithCustomPrompt(String originalContent, AnalysisResult analysisResult, String customPrompt) {
         if (customPrompt == null || customPrompt.trim().isEmpty()) {
@@ -559,7 +559,7 @@ public class TestCaseVerification {
         }
 
         try {
-            // 🆕 建構包含自定義 prompt 的補充提示
+            //  建構包含自定義 prompt 的補充提示
             String enhancedSupplementPrompt = buildSupplementPromptWithCustom(originalContent, analysisResult, customPrompt);
 
             Prompt prompt = new Prompt(enhancedSupplementPrompt);
@@ -568,9 +568,9 @@ public class TestCaseVerification {
             return response.getResult().getOutput().getText();
 
         } catch (Exception e) {
-            System.err.println("❌ 補充內容過程發生錯誤：" + e.getMessage());
+            System.err.println(" 補充內容過程發生錯誤：" + e.getMessage());
             // 回退到原方法
-            System.out.println("🔄 回退到標準補充流程");
+            System.out.println(" 回退到標準補充流程");
             return supplementContent(originalContent, analysisResult);
         }
     }
@@ -589,7 +589,7 @@ public class TestCaseVerification {
             return response.getResult().getOutput().getText();
 
         } catch (Exception e) {
-            System.err.println("❌ 補充內容過程發生錯誤：" + e.getMessage());
+            System.err.println(" 補充內容過程發生錯誤：" + e.getMessage());
             return null;
         }
     }
@@ -597,7 +597,7 @@ public class TestCaseVerification {
     // ========== 工具方法 ==========
 
     /**
-     * 🆕 建構增強的自定義 Prompt（整合比對結果）
+     *  建構增強的自定義 Prompt（整合比對結果）
      */
     private String buildEnhancedCustomPrompt(String originalCustomPrompt, String comparisonPrompt) {
 
@@ -614,12 +614,12 @@ public class TestCaseVerification {
 
         // 2. 加入比對結果指導
         enhancedPrompt.append("=".repeat(80)).append("\n");
-        enhancedPrompt.append("🔍 重要：基於正則表達式的精確比對結果\n");
+        enhancedPrompt.append(" 重要：基於正則表達式的精確比對結果\n");
         enhancedPrompt.append("=".repeat(80)).append("\n");
         enhancedPrompt.append("在驗證過程中，請特別參考以下比對分析結果：\n\n");
         enhancedPrompt.append(comparisonPrompt.trim());
         enhancedPrompt.append("\n=".repeat(80)).append("\n");
-        enhancedPrompt.append("💡 驗證重點：\n");
+        enhancedPrompt.append(" 驗證重點：\n");
         enhancedPrompt.append("- 缺失的操作是否確實需要補充\n");
         enhancedPrompt.append("- 額外的操作是否存在錯誤\n");
         enhancedPrompt.append("- HTTP 方法與路徑的對應關係\n");
@@ -641,11 +641,11 @@ public class TestCaseVerification {
 
         // 加入自定義要求
         prompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
-        prompt.append("🎯 用戶自定義驗證要求（優先級：最高）:\n");
+        prompt.append(" 用戶自定義驗證要求（優先級：最高）:\n");
         prompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
         prompt.append(customPrompt.trim()).append("\n");
         prompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
-        prompt.append("📌 重要提醒：在執行以下標準檢查項目時，請特別注意並優先滿足上述自定義要求。\n");
+        prompt.append(" 重要提醒：在執行以下標準檢查項目時，請特別注意並優先滿足上述自定義要求。\n");
         prompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n\n");
 
         // 加入標準分析 prompt
@@ -655,18 +655,18 @@ public class TestCaseVerification {
     }
 
     /**
-     * 🆕 建構包含自定義 Prompt 的補充提示
+     *  建構包含自定義 Prompt 的補充提示
      */
     private String buildSupplementPromptWithCustom(String originalContent, AnalysisResult analysisResult, String customPrompt) {
         StringBuilder prompt = new StringBuilder();
 
         // 1. 自定義要求（最高優先級）
         prompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
-        prompt.append("🎯 用戶自定義補充和改進要求（優先級：最高）:\n");
+        prompt.append(" 用戶自定義補充和改進要求（優先級：最高）:\n");
         prompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
         prompt.append(customPrompt.trim()).append("\n");
         prompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
-        prompt.append("📌 關鍵指示：在執行以下補充工作時，請嚴格遵循上述自定義要求。\n");
+        prompt.append(" 關鍵指示：在執行以下補充工作時，請嚴格遵循上述自定義要求。\n");
         prompt.append("自定義要求的優先級高於標準要求，如有衝突請以自定義要求為準。\n");
         prompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n\n");
 
@@ -677,13 +677,13 @@ public class TestCaseVerification {
 
         // 3. 整合要求
         prompt.append("請提供完整且符合所有要求的Karate測試內容，確保：\n");
-        prompt.append("🎯 首要目標：完全滿足用戶自定義要求\n");
+        prompt.append(" 首要目標：完全滿足用戶自定義要求\n");
         prompt.append("1. 涵蓋所有缺失的API端點\n");
         prompt.append("2. 補充缺失的測試案例類型\n");
         prompt.append("3. 修正語法錯誤\n");
         prompt.append("4. 完善scenario編號和註解\n");
         prompt.append("5. 確保workflow的完整性\n");
-        prompt.append("6. 🎯 特別注意：整合並實現所有自定義要求\n\n");
+        prompt.append("6.  特別注意：整合並實現所有自定義要求\n\n");
 
         prompt.append("請直接提供完整的Karate feature文件內容：\n");
 
@@ -765,7 +765,7 @@ public class TestCaseVerification {
                 }
             }
         } catch (Exception e) {
-            System.err.println("⚠️ 解析端點時發生錯誤: " + e.getMessage());
+            System.err.println(" 解析端點時發生錯誤: " + e.getMessage());
         }
 
         return endpoints;
@@ -781,39 +781,39 @@ public class TestCaseVerification {
     // ========== 顯示方法 ==========
 
     public void displayAnalysisResult(AnalysisResult result) {
-        System.out.println("📊 靜態分析結果：");
+        System.out.println(" 靜態分析結果：");
 
         if (!result.getPassedItems().isEmpty()) {
-            System.out.println("   ✅ 符合要求的項目：");
+            System.out.println("    符合要求的項目：");
             for (String item : result.getPassedItems()) {
                 System.out.println("      ✓ " + item);
             }
         }
 
         if (!result.getFailedItems().isEmpty()) {
-            System.out.println("   ❌ 不符合要求的項目：");
+            System.out.println("    不符合要求的項目：");
             for (String item : result.getFailedItems()) {
                 System.out.println("      ✗ " + item);
             }
         }
 
-        System.out.println(String.format("   📈 總體評估：%s",
-                result.isCompliant() ? "✅ 完全符合要求" : "❌ 需要改進"));
+        System.out.println(String.format("    總體評估：%s",
+                result.isCompliant() ? " 完全符合要求" : " 需要改進"));
     }
 
     private void displaySyntaxResult(EnhancedSyntaxValidationResult result) {
-        System.out.println("🔤 語法驗證結果：");
-        System.out.println("   靜態檢查: " + (result.getStaticResult().isValid() ? "✅ 通過" : "❌ 有問題"));
+        System.out.println(" 語法驗證結果：");
+        System.out.println("   靜態檢查: " + (result.getStaticResult().isValid() ? " 通過" : " 有問題"));
 
         if (!result.getAllErrors().isEmpty()) {
-            System.out.println("   ❌ 錯誤：");
+            System.out.println("    錯誤：");
             for (String error : result.getAllErrors()) {
                 System.out.println("      • " + error);
             }
         }
 
         if (!result.getAllWarnings().isEmpty()) {
-            System.out.println("   ⚠️ 警告：");
+            System.out.println("    警告：");
             for (String warning : result.getAllWarnings()) {
                 System.out.println("      • " + warning);
             }
@@ -821,12 +821,12 @@ public class TestCaseVerification {
     }
 
     private void displayCoverageResult(EndpointCoverageResult result) {
-        System.out.println("📡 端點覆蓋分析：");
-        System.out.println(String.format("   📈 覆蓋率：%.1f%% (%d/%d)",
+        System.out.println(" 端點覆蓋分析：");
+        System.out.println(String.format("    覆蓋率：%.1f%% (%d/%d)",
                 result.getCoveragePercentage(), result.getCoveredCount(), result.getTotalEndpoints()));
 
         if (!result.getUncoveredEndpoints().isEmpty()) {
-            System.out.println("   ❌ 未覆蓋的端點：");
+            System.out.println("    未覆蓋的端點：");
             for (String endpoint : result.getUncoveredEndpoints()) {
                 System.out.println("      • " + endpoint);
             }
@@ -834,14 +834,14 @@ public class TestCaseVerification {
     }
 
     private void displayExecutionResults(List<KarateExecutor.ExecutionResult> results) {
-        System.out.println("🚀 執行驗證結果：");
+        System.out.println(" 執行驗證結果：");
 
         for (int i = 0; i < results.size(); i++) {
             KarateExecutor.ExecutionResult result = results.get(i);
             System.out.println(String.format("   Feature %d: %s", i + 1, result.getSummary()));
 
             if (result.hasErrors()) {
-                System.out.println("      ❌ 錯誤：");
+                System.out.println("       錯誤：");
                 for (String error : result.getSyntaxErrors()) {
                     System.out.println("         • " + error);
                 }
@@ -919,14 +919,14 @@ public class TestCaseVerification {
 
         public String getSummary() {
             StringBuilder summary = new StringBuilder();
-            summary.append("🔍 綜合驗證摘要:\n");
+            summary.append(" 綜合驗證摘要:\n");
 
             if (analysisResult != null) {
-                summary.append(String.format("   靜態分析: %s\n", analysisResult.isCompliant() ? "✅ 通過" : "❌ 未通過"));
+                summary.append(String.format("   靜態分析: %s\n", analysisResult.isCompliant() ? " 通過" : " 未通過"));
             }
 
             if (syntaxResult != null) {
-                summary.append(String.format("   語法驗證: %s\n", syntaxResult.isOverallValid() ? "✅ 通過" : "❌ 有問題"));
+                summary.append(String.format("   語法驗證: %s\n", syntaxResult.isOverallValid() ? " 通過" : " 有問題"));
             }
 
             if (coverageResult != null) {
@@ -938,7 +938,7 @@ public class TestCaseVerification {
                 summary.append(String.format("   執行驗證: %d/%d 通過\n", validCount, executionResults.size()));
             }
 
-            summary.append(String.format("   整體結果: %s", overallSuccess ? "✅ 完全通過" : "❌ 需要改進"));
+            summary.append(String.format("   整體結果: %s", overallSuccess ? " 完全通過" : " 需要改進"));
 
             return summary.toString();
         }
@@ -976,14 +976,14 @@ public class TestCaseVerification {
 
         public String getSummary() {
             if (hasError) {
-                return "❌ 快速驗證失敗: " + errorMessage;
+                return " 快速驗證失敗: " + errorMessage;
             }
-            return success ? "✅ 快速驗證通過" : "❌ 快速驗證發現問題";
+            return success ? " 快速驗證通過" : " 快速驗證發現問題";
         }
     }
 
     /**
-     * 🆕 質量保證結果
+     *  質量保證結果
      */
     public static class QualityAssuranceResult {
         private String originalContent;
@@ -1032,7 +1032,7 @@ public class TestCaseVerification {
     }
 
     /**
-     * 🆕 增強的質量保證結果
+     *  增強的質量保證結果
      */
     public static class EnhancedQualityAssuranceResult {
         private final QualityAssuranceResult staticResult;
@@ -1075,21 +1075,21 @@ public class TestCaseVerification {
 
         public String getSummary() {
             StringBuilder summary = new StringBuilder();
-            summary.append("📊 質量保證摘要:\n");
-            summary.append(String.format("   靜態分析: %s\n", staticResult.isSuccess() ? "✅ 通過" : "❌ 未通過"));
+            summary.append(" 質量保證摘要:\n");
+            summary.append(String.format("   靜態分析: %s\n", staticResult.isSuccess() ? " 通過" : " 未通過"));
 
             if (executionValidationPerformed) {
                 summary.append(String.format("   執行驗證: %s (成功率: %.1f%%)\n",
-                        !hasExecutionErrors() ? "✅ 通過" : "❌ 有問題", getExecutionSuccessRate()));
+                        !hasExecutionErrors() ? " 通過" : " 有問題", getExecutionSuccessRate()));
             } else {
-                summary.append("   執行驗證: ⚠️ 未執行\n");
+                summary.append("   執行驗證:  未執行\n");
             }
 
             if (verificationResult != null && verificationResult.getCoverageResult() != null) {
                 summary.append(String.format("   覆蓋率: %.1f%%\n", verificationResult.getCoverageResult().getCoveragePercentage()));
             }
 
-            summary.append(String.format("   整體結果: %s", overallSuccess ? "✅ 完全通過" : "❌ 需要改進"));
+            summary.append(String.format("   整體結果: %s", overallSuccess ? " 完全通過" : " 需要改進"));
 
             return summary.toString();
         }

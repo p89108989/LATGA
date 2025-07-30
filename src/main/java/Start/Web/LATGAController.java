@@ -2,7 +2,7 @@ package Start.Web;
 
 import Start.Common.ModeRunner;
 import SwaggerEditor.EditorGPT;
-import Karate.KarateMerger; // 🆕 新增 Karate合併功能
+import Karate.KarateMerger; //  新增 Karate合併功能
 import FileChooser.MultiFileChooser.FileData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * 🆕 Enhanced LATGA Controller - 整合 Karate 合併功能和自定義 Prompt 支援
+ *  Enhanced LATGA Controller - 整合 Karate 合併功能和自定義 Prompt 支援
  * 支援四種模式：static, Behavioral, editorgpt, karate-merger
  */
 @RestController
@@ -43,29 +43,29 @@ public class LATGAController {
     private EditorGPT editorGPT;
 
     @Autowired(required = false)
-    private KarateMerger karateMerger; // 🆕 新增 Karate 合併服務
+    private KarateMerger karateMerger; //  新增 Karate 合併服務
 
     private static final String KARATE_OUTPUT_DIRECTORY = "output/karate";
     private static final String SWAGGER_OUTPUT_DIRECTORY = "output/swagger";
-    private static final String MERGE_OUTPUT_DIRECTORY = "output/merge"; // 🆕 合併輸出目錄
+    private static final String MERGE_OUTPUT_DIRECTORY = "output/merge"; //  合併輸出目錄
     private static final long PROCESSING_TIMEOUT_MINUTES = 10;
 
     /**
-     * 🆕 主要執行端點 - 支援四種模式和自定義 Prompt
+     *  主要執行端點 - 支援四種模式和自定義 Prompt
      */
     @PostMapping("/run")
     public ResponseEntity<Resource> runLATGA(
             @RequestParam("files") MultipartFile[] files,
             @RequestParam("mode") String mode,
-            @RequestParam(value = "customPrompt", required = false) String customPrompt) { // 🆕 添加自定義 prompt 參數
+            @RequestParam(value = "customPrompt", required = false) String customPrompt) { //  添加自定義 prompt 參數
 
         long startTime = System.currentTimeMillis();
         String executionId = generateExecutionId();
 
         System.out.println("\n" + "=".repeat(80));
-        System.out.println("🚀 LATGA 執行開始 [" + executionId + "] - 模式: " + mode.toUpperCase());
+        System.out.println(" LATGA 執行開始 [" + executionId + "] - 模式: " + mode.toUpperCase());
         System.out.println("   檔案數量: " + files.length);
-        System.out.println("   自定義 Prompt: " + (customPrompt != null && !customPrompt.trim().isEmpty() ? "✅ 已提供" : "❌ 未提供"));
+        System.out.println("   自定義 Prompt: " + (customPrompt != null && !customPrompt.trim().isEmpty() ? " 已提供" : " 未提供"));
         if (customPrompt != null && !customPrompt.trim().isEmpty()) {
             System.out.println("   Prompt 長度: " + customPrompt.length() + " 字元");
             System.out.println("   Prompt 預覽: " + customPrompt.substring(0, Math.min(100, customPrompt.length())) + "...");
@@ -75,22 +75,22 @@ public class LATGAController {
 
         try {
             // 步驟1: 驗證輸入
-            System.out.println("📋 步驟1: 輸入驗證...");
+            System.out.println(" 步驟1: 輸入驗證...");
             validateInput(files, mode);
-            System.out.println("✅ 輸入驗證通過");
+            System.out.println(" 輸入驗證通過");
 
             // 步驟2: 檔案轉換
-            System.out.println("📂 步驟2: 檔案轉換...");
+            System.out.println(" 步驟2: 檔案轉換...");
             List<FileData> fileDataList = convertMultipartFiles(files);
-            System.out.println("✅ 檔案轉換完成 - " + fileDataList.size() + " 檔案");
+            System.out.println(" 檔案轉換完成 - " + fileDataList.size() + " 檔案");
 
-            // 步驟3: 根據模式執行不同處理 (🆕 傳遞自定義 prompt)
+            // 步驟3: 根據模式執行不同處理 ( 傳遞自定義 prompt)
             ResponseEntity<Resource> result;
             switch (mode.toLowerCase()) {
                 case "editorgpt":
                     result = handleEditorGPTMode(fileDataList, customPrompt, executionId, startTime);
                     break;
-                case "karate-merger": // 🆕 新增 Karate 合併模式
+                case "karate-merger": //  新增 Karate 合併模式
                     result = handleKarateMergerMode(fileDataList, customPrompt, executionId, startTime);
                     break;
                 case "Structural":
@@ -102,7 +102,7 @@ public class LATGAController {
             }
 
             long totalTime = System.currentTimeMillis() - startTime;
-            System.out.println("🎉 執行成功 [" + executionId + "] - 總耗時: " + totalTime + "ms");
+            System.out.println(" 執行成功 [" + executionId + "] - 總耗時: " + totalTime + "ms");
 
             return result;
 
@@ -112,27 +112,27 @@ public class LATGAController {
             return createErrorResponse("處理失敗: " + e.getMessage(), executionId, startTime, 500);
         } catch (Exception e) {
             String errorMsg = "系統異常: " + e.getClass().getSimpleName() + " - " + e.getMessage();
-            System.err.println("❌ " + errorMsg);
+            System.err.println(" " + errorMsg);
             e.printStackTrace();
             return createErrorResponse(errorMsg, executionId, startTime, 500);
         } finally {
             long totalTime = System.currentTimeMillis() - startTime;
-            System.out.println("⏱️ 請求處理結束 [" + executionId + "] - 總耗時: " + totalTime + "ms");
+            System.out.println(" 請求處理結束 [" + executionId + "] - 總耗時: " + totalTime + "ms");
             System.out.println("=".repeat(80) + "\n");
         }
     }
 
     /**
-     * 🆕 處理 EditorGPT 模式（支援自定義 Prompt）
+     *  處理 EditorGPT 模式（支援自定義 Prompt）
      */
     private ResponseEntity<Resource> handleEditorGPTMode(List<FileData> fileDataList, String customPrompt,
                                                          String executionId, long startTime)
             throws ProcessingException {
 
-        System.out.println("🤖 執行 EditorGPT 模式");
+        System.out.println(" 執行 EditorGPT 模式");
 
         if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-            System.out.println("📝 使用自定義 Prompt: " + customPrompt.substring(0, Math.min(50, customPrompt.length())) + "...");
+            System.out.println(" 使用自定義 Prompt: " + customPrompt.substring(0, Math.min(50, customPrompt.length())) + "...");
         }
 
         // 檢查 EditorGPT 是否可用
@@ -142,11 +142,11 @@ public class LATGAController {
 
         try {
             // 清理舊檔案
-            System.out.println("🧹 清理舊的 Swagger 增強檔案...");
+            System.out.println(" 清理舊的 Swagger 增強檔案...");
             clearOldGeneratedFiles(SWAGGER_OUTPUT_DIRECTORY);
 
-            // 🆕 使用 EditorGPT 的處理方法（傳遞自定義 prompt）
-            System.out.println("🔬 開始 EditorGPT 處理...");
+            //  使用 EditorGPT 的處理方法（傳遞自定義 prompt）
+            System.out.println(" 開始 EditorGPT 處理...");
             EditorGPTResult result = processWithEditorGPT(fileDataList, customPrompt);
 
             if (!result.isSuccess()) {
@@ -154,7 +154,7 @@ public class LATGAController {
             }
 
             // 查找增強後的檔案
-            System.out.println("🔍 查找增強後的 Swagger 檔案...");
+            System.out.println(" 查找增強後的 Swagger 檔案...");
             String enhancedContent = findLatestSwaggerFile();
 
             // 生成檔案名
@@ -163,7 +163,7 @@ public class LATGAController {
 
             long processingTime = System.currentTimeMillis() - startTime;
 
-            System.out.println("✅ EditorGPT 處理完成:");
+            System.out.println(" EditorGPT 處理完成:");
             System.out.println("   處理時間: " + processingTime + "ms");
             System.out.println("   處理檔案: " + result.getProcessedFiles() + " 個");
             System.out.println("   輸出檔案: " + fileName);
@@ -180,18 +180,18 @@ public class LATGAController {
     }
 
     /**
-     * 🆕 使用 EditorGPT 處理檔案（支援自定義 Prompt）
+     *  使用 EditorGPT 處理檔案（支援自定義 Prompt）
      */
     private EditorGPTResult processWithEditorGPT(List<FileData> fileDataList, String customPrompt) throws Exception {
-        System.out.println("🤖 調用 EditorGPT 處理 " + fileDataList.size() + " 個檔案");
+        System.out.println(" 調用 EditorGPT 處理 " + fileDataList.size() + " 個檔案");
 
         try {
-            // 🆕 直接調用 EditorGPT 的 processSwaggerFiles 方法，傳遞自定義 prompt
+            //  直接調用 EditorGPT 的 processSwaggerFiles 方法，傳遞自定義 prompt
             SwaggerEditor.EditorGPT.EditorGPTResult result;
             if (customPrompt != null && !customPrompt.trim().isEmpty()) {
                 // 如果有自定義 prompt，使用支援自定義 prompt 的方法
                 result = editorGPT.processSwaggerFiles(fileDataList, customPrompt);
-                System.out.println("📝 EditorGPT 已應用自定義指令");
+                System.out.println(" EditorGPT 已應用自定義指令");
             } else {
                 // 沒有自定義 prompt，使用原始方法
                 result = editorGPT.processSwaggerFiles(fileDataList);
@@ -205,22 +205,22 @@ public class LATGAController {
             );
 
         } catch (SwaggerEditor.EditorGPT.EditorGPTException e) {
-            System.err.println("❌ EditorGPT 處理失敗: " + e.getMessage());
+            System.err.println(" EditorGPT 處理失敗: " + e.getMessage());
             throw new Exception("EditorGPT 處理失敗: " + e.getMessage(), e);
         }
     }
 
     /**
-     * 🆕 處理 Karate 合併模式（支援自定義 Prompt）
+     *  處理 Karate 合併模式（支援自定義 Prompt）
      */
     private ResponseEntity<Resource> handleKarateMergerMode(List<FileData> fileDataList, String customPrompt,
                                                             String executionId, long startTime)
             throws ProcessingException {
 
-        System.out.println("🔗 執行 Karate 合併模式");
+        System.out.println(" 執行 Karate 合併模式");
 
         if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-            System.out.println("📝 使用自定義合併策略: " + customPrompt.substring(0, Math.min(50, customPrompt.length())) + "...");
+            System.out.println(" 使用自定義合併策略: " + customPrompt.substring(0, Math.min(50, customPrompt.length())) + "...");
         }
 
         // 檢查服務是否可用
@@ -242,7 +242,7 @@ public class LATGAController {
 
         try {
             // 清理舊檔案
-            System.out.println("🧹 清理舊的合併檔案...");
+            System.out.println(" 清理舊的合併檔案...");
             clearOldGeneratedFiles(MERGE_OUTPUT_DIRECTORY);
 
             // 準備合併配置
@@ -254,14 +254,14 @@ public class LATGAController {
             config.setEnableSyntaxValidation(true);
             config.setScenarioNamingStrategy(KarateMerger.ScenarioNamingStrategy.KEEP_ORIGINAL_WITH_PREFIX);
 
-            // 🆕 如果有自定義 prompt，將其設置為合併描述或其他配置
+            //  如果有自定義 prompt，將其設置為合併描述或其他配置
             if (customPrompt != null && !customPrompt.trim().isEmpty()) {
                 config.setMergedFeatureDescription(customPrompt + " (Generated with custom instructions)");
-                System.out.println("📝 已將自定義指令整合到合併配置中");
+                System.out.println(" 已將自定義指令整合到合併配置中");
             }
 
             // 執行合併
-            System.out.println("🔄 開始合併 " + fileDataList.size() + " 個 Karate 檔案...");
+            System.out.println(" 開始合併 " + fileDataList.size() + " 個 Karate 檔案...");
             KarateMerger.MergeResult mergeResult;
 
             if (fileDataList.size() == 2) {
@@ -289,7 +289,7 @@ public class LATGAController {
 
             long processingTime = System.currentTimeMillis() - startTime;
 
-            System.out.println("✅ Karate 合併完成:");
+            System.out.println(" Karate 合併完成:");
             System.out.println("   處理時間: " + processingTime + "ms");
             System.out.println("   合併檔案: " + fileDataList.size() + " 個");
             System.out.println("   總 Scenario: " + mergeResult.getStatistics().getTotalScenarios() + " 個");
@@ -307,28 +307,28 @@ public class LATGAController {
     }
 
     /**
-     * 🆕 處理 Karate 模式 (Structural/Behavioral)（支援自定義 Prompt）
+     *  處理 Karate 模式 (Structural/Behavioral)（支援自定義 Prompt）
      */
     private ResponseEntity<Resource> handleKarateMode(String mode, List<FileData> fileDataList, String customPrompt,
                                                       String executionId, long startTime)
             throws ProcessingException {
 
-        System.out.println("🎯 執行 Karate 模式: " + mode.toUpperCase());
+        System.out.println(" 執行 Karate 模式: " + mode.toUpperCase());
 
         if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-            System.out.println("📝 使用自定義 Prompt: " + customPrompt.substring(0, Math.min(50, customPrompt.length())) + "...");
+            System.out.println(" 使用自定義 Prompt: " + customPrompt.substring(0, Math.min(50, customPrompt.length())) + "...");
         }
 
         // 清理舊檔案
-        System.out.println("🧹 清理舊的 Karate 測試檔案...");
+        System.out.println(" 清理舊的 Karate 測試檔案...");
         clearOldGeneratedFiles(KARATE_OUTPUT_DIRECTORY);
 
-        // 執行核心處理（🆕 傳遞自定義 prompt）
-        System.out.println("🤖 執行 " + mode + " 模式處理...");
+        // 執行核心處理（ 傳遞自定義 prompt）
+        System.out.println(" 執行 " + mode + " 模式處理...");
         ExecutionResult result = executeMode(mode, fileDataList, customPrompt, executionId);
 
         // 查找生成的 .feature 檔案
-        System.out.println("🔍 查找生成的 .feature 檔案...");
+        System.out.println(" 查找生成的 .feature 檔案...");
         FeatureFileResult featureResult = findGeneratedFeatureFile();
 
         if (!featureResult.isSuccess()) {
@@ -337,7 +337,7 @@ public class LATGAController {
 
         long totalTime = System.currentTimeMillis() - startTime;
 
-        System.out.println("✅ Karate 模式處理完成:");
+        System.out.println(" Karate 模式處理完成:");
         System.out.println("   總耗時: " + totalTime + "ms");
         System.out.println("   檔案名: " + featureResult.getFileName());
         System.out.println("   檔案大小: " + featureResult.getFileContent().length() + " 字元");
@@ -349,7 +349,7 @@ public class LATGAController {
     }
 
     /**
-     * 🆕 執行模式的核心方法（支援自定義 Prompt）
+     *  執行模式的核心方法（支援自定義 Prompt）
      */
     private ExecutionResult executeMode(String mode, List<FileData> fileDataList, String customPrompt, String executionId)
             throws ProcessingException {
@@ -359,9 +359,9 @@ public class LATGAController {
                 Files.createDirectories(outputPath);
             }
 
-            // 🆕 傳遞自定義 prompt 到 ModeRunner
+            //  傳遞自定義 prompt 到 ModeRunner
             if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-                System.out.println("📝 傳遞自定義 Prompt 到 ModeRunner...");
+                System.out.println(" 傳遞自定義 Prompt 到 ModeRunner...");
                 modeRunner.run(mode, fileDataList, customPrompt);
             } else {
                 modeRunner.run(mode, fileDataList);
@@ -378,7 +378,7 @@ public class LATGAController {
     }
 
     /**
-     * 🆕 保存合併結果到輸出目錄
+     *  保存合併結果到輸出目錄
      */
     private void saveToMergeOutput(String content, String fileName) throws IOException {
         Path outputDir = Paths.get(MERGE_OUTPUT_DIRECTORY);
@@ -389,11 +389,11 @@ public class LATGAController {
         Path filePath = outputDir.resolve(fileName);
         Files.writeString(filePath, content, StandardCharsets.UTF_8);
 
-        System.out.println("📁 合併結果已保存到: " + filePath);
+        System.out.println(" 合併結果已保存到: " + filePath);
     }
 
     /**
-     * 🆕 創建合併檔案響應
+     *  創建合併檔案響應
      */
     private ResponseEntity<Resource> createMergedFileResponse(String mergedContent, String fileName,
                                                               String executionId, long processingTime,
@@ -423,7 +423,7 @@ public class LATGAController {
     }
 
     /**
-     * 🆕 Karate 合併專用 API 端點（支援自定義 Prompt）
+     *  Karate 合併專用 API 端點（支援自定義 Prompt）
      */
     @PostMapping("/merge-karate")
     public ResponseEntity<Map<String, Object>> mergeKarateFiles(
@@ -434,14 +434,14 @@ public class LATGAController {
             @RequestParam(value = "enableQualityCheck", defaultValue = "true") boolean enableQualityCheck,
             @RequestParam(value = "enableSyntaxValidation", defaultValue = "true") boolean enableSyntaxValidation,
             @RequestParam(value = "scenarioNamingStrategy", defaultValue = "KEEP_ORIGINAL_WITH_PREFIX") String scenarioNamingStrategy,
-            @RequestParam(value = "customPrompt", required = false) String customPrompt) { // 🆕 添加自定義 prompt 參數
+            @RequestParam(value = "customPrompt", required = false) String customPrompt) { //  添加自定義 prompt 參數
 
         long startTime = System.currentTimeMillis();
         String executionId = generateExecutionId();
 
-        System.out.println("🔗 執行 Karate 合併 API [" + executionId + "]");
+        System.out.println(" 執行 Karate 合併 API [" + executionId + "]");
         if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-            System.out.println("📝 包含自定義 Prompt: " + customPrompt.substring(0, Math.min(50, customPrompt.length())) + "...");
+            System.out.println(" 包含自定義 Prompt: " + customPrompt.substring(0, Math.min(50, customPrompt.length())) + "...");
         }
 
         try {
@@ -469,7 +469,7 @@ public class LATGAController {
             KarateMerger.MergeConfig config = new KarateMerger.MergeConfig();
             config.setMergedFeatureName(mergedFeatureName);
 
-            // 🆕 如果有自定義 prompt，整合到描述中
+            //  如果有自定義 prompt，整合到描述中
             if (customPrompt != null && !customPrompt.trim().isEmpty()) {
                 config.setMergedFeatureDescription(mergedFeatureDescription + " | Custom: " + customPrompt);
             } else {
@@ -506,7 +506,7 @@ public class LATGAController {
             response.put("executionId", executionId);
             response.put("processingTime", System.currentTimeMillis() - startTime);
 
-            // 🆕 添加自定義 prompt 資訊
+            //  添加自定義 prompt 資訊
             if (customPrompt != null && !customPrompt.trim().isEmpty()) {
                 response.put("customPromptApplied", true);
                 response.put("customPromptPreview", customPrompt.substring(0, Math.min(100, customPrompt.length())) + "...");
@@ -532,7 +532,7 @@ public class LATGAController {
     }
 
     /**
-     * 🆕 獲取 Karate 合併服務狀態
+     *  獲取 Karate 合併服務狀態
      */
     @GetMapping("/merge-status")
     public ResponseEntity<Map<String, Object>> getMergeStatus() {
@@ -542,7 +542,7 @@ public class LATGAController {
             boolean isReady = karateMerger != null && karateMerger.isReady();
             status.put("ready", isReady);
             status.put("serviceAvailable", karateMerger != null);
-            status.put("customPromptSupported", true); // 🆕 表示支援自定義 prompt
+            status.put("customPromptSupported", true); //  表示支援自定義 prompt
 
             if (karateMerger != null) {
                 status.put("serviceInfo", karateMerger.getServiceInfo());
@@ -568,7 +568,7 @@ public class LATGAController {
     }
 
     /**
-     * 🆕 創建 JSON 錯誤響應
+     *  創建 JSON 錯誤響應
      */
     private ResponseEntity<Map<String, Object>> createJsonErrorResponse(String errorMessage, String executionId, long startTime) {
         Map<String, Object> response = new HashMap<>();
@@ -582,20 +582,20 @@ public class LATGAController {
     }
 
     /**
-     * 🔍 查找最新的 Swagger 檔案
+     *  查找最新的 Swagger 檔案
      */
     private String findLatestSwaggerFile() throws IOException {
         try {
-            // 🆕 直接調用 EditorGPT 的 findLatestEnhancedFile 方法
+            //  直接調用 EditorGPT 的 findLatestEnhancedFile 方法
             return editorGPT.findLatestEnhancedFile();
         } catch (IOException e) {
-            System.err.println("❌ 無法找到最新的增強檔案: " + e.getMessage());
+            System.err.println(" 無法找到最新的增強檔案: " + e.getMessage());
             throw e;
         }
     }
 
     /**
-     * 🆕 創建 Swagger 檔案響應
+     *  創建 Swagger 檔案響應
      */
     private ResponseEntity<Resource> createSwaggerFileResponse(String swaggerContent, String fileName,
                                                                String executionId, long processingTime,
@@ -622,7 +622,7 @@ public class LATGAController {
     }
 
     /**
-     * 🆕 查找生成的 .feature 檔案
+     *  查找生成的 .feature 檔案
      */
     private FeatureFileResult findGeneratedFeatureFile() {
         try {
@@ -717,12 +717,12 @@ public class LATGAController {
                     try {
                         Files.delete(file);
                     } catch (IOException e) {
-                        System.err.println("⚠️ 無法刪除舊檔案: " + file);
+                        System.err.println(" 無法刪除舊檔案: " + file);
                     }
                 }
             }
         } catch (IOException e) {
-            System.err.println("⚠️ 清理舊檔案失敗: " + e.getMessage());
+            System.err.println(" 清理舊檔案失敗: " + e.getMessage());
         }
     }
 
@@ -855,20 +855,20 @@ public class LATGAController {
         response.append("==================\n\n");
 
         response.append("1. ModeRunner狀態: ");
-        response.append(modeRunner != null ? "✅ 已初始化\n" : "❌ 未初始化\n");
+        response.append(modeRunner != null ? " 已初始化\n" : " 未初始化\n");
 
         response.append("2. EditorGPT狀態: ");
-        response.append(editorGPT != null ? "✅ 已初始化\n" : "❌ 未初始化\n");
+        response.append(editorGPT != null ? " 已初始化\n" : " 未初始化\n");
 
         response.append("3. KarateMerger狀態: ");
-        response.append(karateMerger != null ? "✅ 已初始化\n" : "❌ 未初始化\n");
+        response.append(karateMerger != null ? " 已初始化\n" : " 未初始化\n");
 
-        response.append("4. Customed Prompt支援: ✅ 已啟用\n"); // 🆕 添加自定義 prompt 狀態
+        response.append("4. Customed Prompt支援:  已啟用\n"); //  添加自定義 prompt 狀態
 
         response.append("5. 輸出目錄:\n");
-        response.append("   - Karate: ").append(Files.exists(Paths.get(KARATE_OUTPUT_DIRECTORY)) ? "✅" : "❌").append("\n");
-        response.append("   - Swagger: ").append(Files.exists(Paths.get(SWAGGER_OUTPUT_DIRECTORY)) ? "✅" : "❌").append("\n");
-        response.append("   - Merge: ").append(Files.exists(Paths.get(MERGE_OUTPUT_DIRECTORY)) ? "✅" : "❌").append("\n");
+        response.append("   - Karate: ").append(Files.exists(Paths.get(KARATE_OUTPUT_DIRECTORY)) ? "" : "").append("\n");
+        response.append("   - Swagger: ").append(Files.exists(Paths.get(SWAGGER_OUTPUT_DIRECTORY)) ? "" : "").append("\n");
+        response.append("   - Merge: ").append(Files.exists(Paths.get(MERGE_OUTPUT_DIRECTORY)) ? "" : "").append("\n");
 
         return ResponseEntity.ok(response.toString());
     }
@@ -883,9 +883,9 @@ public class LATGAController {
         Map<String, Object> health = new HashMap<>();
         health.put("status", "UP");
         health.put("timestamp", LocalDateTime.now().toString());
-        health.put("version", "v4.1 - Enhanced with KarateMerger & Custom Prompt Support"); // 🆕 更新版本資訊
+        health.put("version", "v4.1 - Enhanced with KarateMerger & Custom Prompt Support"); //  更新版本資訊
         health.put("supportedModes", List.of("Structural", "Behavioral", "editorgpt", "karate-merger"));
-        health.put("customPromptSupported", true); // 🆕 添加自定義 prompt 支援狀態
+        health.put("customPromptSupported", true); //  添加自定義 prompt 支援狀態
         health.put("services", Map.of(
                 "modeRunner", modeRunner != null,
                 "editorGPT", editorGPT != null,

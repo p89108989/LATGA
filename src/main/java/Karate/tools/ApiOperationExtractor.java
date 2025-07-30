@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 🔍 API 操作提取器 - 使用正則表達式分析 Swagger/ODG 文件
+ *  API 操作提取器 - 使用正則表達式分析 Swagger/ODG 文件
  * 提取 API 操作數量、名稱、路徑等信息，用於後續比對驗證
  *
  * @author StaticBlackbox Team
@@ -118,7 +118,7 @@ public class ApiOperationExtractor {
     }
 
     /**
-     * 🎯 主要分析方法：從文件列表中提取 API 操作
+     *  主要分析方法：從文件列表中提取 API 操作
      */
     public ApiAnalysisResult extractApiOperations(List<FileData> fileDataList) {
         List<ApiOperation> allOperations = new ArrayList<>();
@@ -129,13 +129,13 @@ public class ApiOperationExtractor {
             return new ApiAnalysisResult(allOperations, "empty");
         }
 
-        System.out.println("🔍 開始分析 " + fileDataList.size() + " 個文件...");
+        System.out.println(" 開始分析 " + fileDataList.size() + " 個文件...");
 
         for (FileData fileData : fileDataList) {
             String fileName = fileData.getFileName().toLowerCase();
             String content = fileData.getContent();
 
-            System.out.println("📄 處理文件: " + fileName);
+            System.out.println(" 處理文件: " + fileName);
 
             try {
                 if (fileName.endsWith(".json") || fileName.contains("swagger")) {
@@ -143,33 +143,33 @@ public class ApiOperationExtractor {
                     List<ApiOperation> swaggerOps = extractFromSwagger(content);
                     allOperations.addAll(swaggerOps);
                     sourceType = allOperations.size() == swaggerOps.size() ? "swagger" : "mixed";
-                    System.out.println("  ✅ Swagger JSON: 提取了 " + swaggerOps.size() + " 個操作");
+                    System.out.println("   Swagger JSON: 提取了 " + swaggerOps.size() + " 個操作");
 
                 } else if (fileName.endsWith(".yaml") || fileName.endsWith(".yml")) {
                     // 分析 Swagger YAML
                     List<ApiOperation> yamlOps = extractFromSwaggerYaml(content);
                     allOperations.addAll(yamlOps);
                     sourceType = allOperations.size() == yamlOps.size() ? "swagger" : "mixed";
-                    System.out.println("  ✅ Swagger YAML: 提取了 " + yamlOps.size() + " 個操作");
+                    System.out.println("   Swagger YAML: 提取了 " + yamlOps.size() + " 個操作");
 
                 } else if (fileName.endsWith(".dot") || fileName.contains("odg")) {
                     // 分析 ODG (操作依賴圖)
                     List<ApiOperation> odgOps = extractFromOdg(content);
                     allOperations.addAll(odgOps);
                     sourceType = allOperations.size() == odgOps.size() ? "odg" : "mixed";
-                    System.out.println("  ✅ ODG: 提取了 " + odgOps.size() + " 個操作");
+                    System.out.println("   ODG: 提取了 " + odgOps.size() + " 個操作");
 
                 } else {
                     warnings.add("未知文件類型: " + fileName + "，嘗試通用解析");
                     List<ApiOperation> genericOps = extractFromGeneric(content);
                     allOperations.addAll(genericOps);
-                    System.out.println("  ⚠️ 通用解析: 提取了 " + genericOps.size() + " 個操作");
+                    System.out.println("   通用解析: 提取了 " + genericOps.size() + " 個操作");
                 }
 
             } catch (Exception e) {
                 String errorMsg = "解析文件 " + fileName + " 時發生錯誤: " + e.getMessage();
                 warnings.add(errorMsg);
-                System.err.println("❌ " + errorMsg);
+                System.err.println(" " + errorMsg);
                 e.printStackTrace();
             }
         }
@@ -185,15 +185,15 @@ public class ApiOperationExtractor {
             String dedupeMsg = String.format("發現重複操作 %d 個，已自動去重",
                     allOperations.size() - uniqueOps.size());
             result.addWarning(dedupeMsg);
-            System.out.println("🔄 " + dedupeMsg);
+            System.out.println(" " + dedupeMsg);
         }
 
-        System.out.println("📊 總計提取 " + uniqueOps.size() + " 個唯一操作");
+        System.out.println(" 總計提取 " + uniqueOps.size() + " 個唯一操作");
         return result;
     }
 
     /**
-     * 🔍 從 Swagger JSON 中提取操作
+     *  從 Swagger JSON 中提取操作
      */
     private List<ApiOperation> extractFromSwagger(String jsonContent) {
         List<ApiOperation> operations = new ArrayList<>();
@@ -242,7 +242,7 @@ public class ApiOperationExtractor {
     }
 
     /**
-     * 🔍 從 Swagger YAML 中提取操作
+     *  從 Swagger YAML 中提取操作
      */
     private List<ApiOperation> extractFromSwaggerYaml(String yamlContent) {
         List<ApiOperation> operations = new ArrayList<>();
@@ -291,18 +291,18 @@ public class ApiOperationExtractor {
     }
 
     /**
-     * 🔍 從 ODG (操作依賴圖) 中提取操作 - 修復版本
+     *  從 ODG (操作依賴圖) 中提取操作 - 修復版本
      */
     private List<ApiOperation> extractFromOdg(String odgContent) {
         List<ApiOperation> operations = new ArrayList<>();
 
         if (odgContent == null || odgContent.trim().isEmpty()) {
-            System.out.println("  ⚠️ ODG 內容為空");
+            System.out.println("   ODG 內容為空");
             return operations;
         }
 
         try {
-            System.out.println("  🔍 開始分析 ODG 內容...");
+            System.out.println("   開始分析 ODG 內容...");
 
             // 修復 1: 精確匹配 DOT 格式的節點標籤
             // 匹配格式: 1 [ label="GET /api/v3/path" ];
@@ -318,13 +318,13 @@ public class ApiOperationExtractor {
                 ApiOperation op = parseOperationFromLabel(label);
                 if (op != null) {
                     operations.add(op);
-                    System.out.println("      ✅ 解析成功: " + op);
+                    System.out.println("       解析成功: " + op);
                 } else {
-                    System.out.println("      ❌ 解析失敗");
+                    System.out.println("       解析失敗");
                 }
             }
 
-            System.out.println("  📊 節點標籤分析完成，共處理 " + nodeCount + " 個節點，成功提取 " + operations.size() + " 個操作");
+            System.out.println("   節點標籤分析完成，共處理 " + nodeCount + " 個節點，成功提取 " + operations.size() + " 個操作");
 
             // 修復 2: 檢查邊標籤（有些 ODG 可能在邊上也有操作信息）
             Pattern edgePattern = Pattern.compile("\\w+\\s*->\\s*\\w+\\s*\\[\\s*label=\"([^\"]+)\"\\s*\\]\\s*;?", Pattern.CASE_INSENSITIVE);
@@ -341,13 +341,13 @@ public class ApiOperationExtractor {
                     ApiOperation op = parseOperationFromLabel(label);
                     if (op != null && !operations.contains(op)) {
                         operations.add(op);
-                        System.out.println("      ✅ 新增邊操作: " + op);
+                        System.out.println("       新增邊操作: " + op);
                     }
                 }
             }
 
             if (edgeCount > 0) {
-                System.out.println("  📊 邊標籤分析完成，共處理 " + edgeCount + " 條邊");
+                System.out.println("   邊標籤分析完成，共處理 " + edgeCount + " 條邊");
             }
 
             // 修復 3: 方法調用模式的增強匹配
@@ -376,30 +376,30 @@ public class ApiOperationExtractor {
                     ApiOperation op = new ApiOperation(method, path, null, null);
                     if (!operations.contains(op)) {
                         operations.add(op);
-                        System.out.println("    ✅ 找到方法調用模式 " + (i+1) + ": " + op);
+                        System.out.println("     找到方法調用模式 " + (i+1) + ": " + op);
                     }
                 }
             }
 
             if (callCount > 0) {
-                System.out.println("  📊 方法調用模式分析完成，共處理 " + callCount + " 個調用");
+                System.out.println("   方法調用模式分析完成，共處理 " + callCount + " 個調用");
             }
 
         } catch (Exception e) {
-            System.err.println("  ❌ ODG 解析錯誤: " + e.getMessage());
+            System.err.println("   ODG 解析錯誤: " + e.getMessage());
             e.printStackTrace();
 
             // 回退到通用解析
-            System.out.println("  🔄 回退到通用解析...");
+            System.out.println("   回退到通用解析...");
             operations.addAll(extractFromGeneric(odgContent));
         }
 
-        System.out.println("  📊 ODG 解析完成，共提取 " + operations.size() + " 個操作");
+        System.out.println("   ODG 解析完成，共提取 " + operations.size() + " 個操作");
         return operations;
     }
 
     /**
-     * 🔍 通用解析（當其他方法都失敗時）- 增強版本
+     *  通用解析（當其他方法都失敗時）- 增強版本
      */
     private List<ApiOperation> extractFromGeneric(String content) {
         List<ApiOperation> operations = new ArrayList<>();
@@ -523,7 +523,7 @@ public class ApiOperationExtractor {
     }
 
     /**
-     * 🔍 從 Karate 內容中提取已實現的操作（用於比對）
+     *  從 Karate 內容中提取已實現的操作（用於比對）
      */
     public List<ApiOperation> extractImplementedOperations(String karateContent) {
         List<ApiOperation> implementedOps = new ArrayList<>();
@@ -561,7 +561,7 @@ public class ApiOperationExtractor {
             }
 
         } catch (Exception e) {
-            System.err.println("⚠️ 提取已實現操作時發生錯誤: " + e.getMessage());
+            System.err.println(" 提取已實現操作時發生錯誤: " + e.getMessage());
         }
 
         // 去重

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Few-shot 範例管理器 (簡化版) - 🆕 支援自定義 Prompt 整合
+ * Few-shot 範例管理器 (簡化版) -  支援自定義 Prompt 整合
  * 負責載入固定路徑的 few-shot 範例檔案，並組合 few-shot prompt
  */
 public class FewShotManager {
@@ -61,7 +61,7 @@ public class FewShotManager {
             以這個swagger文件範例(.json)為例，透過操作附上的相依圖(.dot)，最終會產生這樣的karate測試文件(.feature)
             """;
 
-    // 🆕 自定義 Prompt 分隔符
+    //  自定義 Prompt 分隔符
     private static final String CUSTOM_PROMPT_SEPARATOR = "=".repeat(80);
 
     private final String basePath;
@@ -97,14 +97,14 @@ public class FewShotManager {
                 if (Files.exists(path)) {
                     String content = Files.readString(path);
                     fewShotFiles.add(new FileData(filePath, content));
-                    String message = "✅ 載入 " + type.getDescription() + ": " + path.getFileName();
+                    String message = " 載入 " + type.getDescription() + ": " + path.getFileName();
                     messages.add(message);
                 } else {
-                    String message = "⚠️ " + type.getDescription() + " 檔案不存在: " + filePath;
+                    String message = " " + type.getDescription() + " 檔案不存在: " + filePath;
                     messages.add(message);
                 }
             } catch (IOException e) {
-                String message = "❌ 讀取 " + type.getDescription() + " 時發生錯誤: " + e.getMessage();
+                String message = " 讀取 " + type.getDescription() + " 時發生錯誤: " + e.getMessage();
                 messages.add(message);
             }
         }
@@ -114,7 +114,7 @@ public class FewShotManager {
     }
 
     /**
-     * 🆕 組合完整的 Few-shot Prompt（支援自定義 Prompt）
+     *  組合完整的 Few-shot Prompt（支援自定義 Prompt）
      * @param loadResult Few-shot 載入結果
      * @param mainPrompt 主要的 prompt 內容
      * @param userFiles 用戶選擇的檔案
@@ -127,14 +127,14 @@ public class FewShotManager {
         // 1. 加入主要提示
         combinedPrompt.append(mainPrompt);
 
-        // 🆕 2. 如果有自定義 prompt，優先加入並給予高權重
+        //  2. 如果有自定義 prompt，優先加入並給予高權重
         if (customPrompt != null && !customPrompt.trim().isEmpty()) {
             combinedPrompt.append("\n").append(CUSTOM_PROMPT_SEPARATOR).append("\n");
-            combinedPrompt.append("🎯 用戶自定義指令（優先級：高）:\n");
+            combinedPrompt.append(" 用戶自定義指令（優先級：高）:\n");
             combinedPrompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
             combinedPrompt.append(customPrompt.trim());
             combinedPrompt.append("\n").append(CUSTOM_PROMPT_SEPARATOR).append("\n");
-            combinedPrompt.append("📌 重要提醒：請在處理時特別注意並優先遵循上述自定義指令，");
+            combinedPrompt.append(" 重要提醒：請在處理時特別注意並優先遵循上述自定義指令，");
             combinedPrompt.append("將其整合到分析和生成過程的每個步驟中。\n");
             combinedPrompt.append("如果自定義指令與預設行為有衝突，請以自定義指令為準。\n");
             combinedPrompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n\n");
@@ -143,7 +143,7 @@ public class FewShotManager {
         // 3. 加入用戶檔案
         if (userFiles != null && !userFiles.isEmpty()) {
             combinedPrompt.append("\n").append(CUSTOM_PROMPT_SEPARATOR).append("\n");
-            combinedPrompt.append("📂 以下是需要處理的實際檔案：\n");
+            combinedPrompt.append(" 以下是需要處理的實際檔案：\n");
             combinedPrompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
 
             for (int i = 0; i < userFiles.size(); i++) {
@@ -158,7 +158,7 @@ public class FewShotManager {
         // 4. 加入 Few-shot 範例（保持原邏輯但加入自定義 prompt 提醒）
         if (loadResult.isSuccess() && !loadResult.getFewShotFiles().isEmpty()) {
             combinedPrompt.append("\n").append(CUSTOM_PROMPT_SEPARATOR).append("\n");
-            combinedPrompt.append("📚 參考範例（用於理解輸出格式和結構）:\n");
+            combinedPrompt.append(" 參考範例（用於理解輸出格式和結構）:\n");
             combinedPrompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
             combinedPrompt.append(DEFAULT_FEWSHOT_PROMPT_TEMPLATE).append("\n");
             combinedPrompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
@@ -174,19 +174,19 @@ public class FewShotManager {
 
             combinedPrompt.append("\n").append(CUSTOM_PROMPT_SEPARATOR).append("\n");
 
-            // 🆕 根據是否有自定義 prompt 給出不同的最終指導
+            //  根據是否有自定義 prompt 給出不同的最終指導
             if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-                combinedPrompt.append("🚀 最終任務指導：\n");
+                combinedPrompt.append(" 最終任務指導：\n");
                 combinedPrompt.append("現在，請根據上述範例模式的結構和格式，");
                 combinedPrompt.append("同時嚴格遵循前面提到的自定義指令，");
                 combinedPrompt.append("為前面提到的實際檔案生成對應的 Karate 測試案例。\n\n");
 
-                combinedPrompt.append("⚠️ 特別注意：\n");
+                combinedPrompt.append(" 特別注意：\n");
                 combinedPrompt.append("- 自定義指令具有最高優先級\n");
                 combinedPrompt.append("- 範例僅供參考格式，請根據自定義指令調整內容\n");
                 combinedPrompt.append("- 如有衝突，以自定義指令為準\n");
             } else {
-                combinedPrompt.append("🚀 最終任務指導：\n");
+                combinedPrompt.append(" 最終任務指導：\n");
                 combinedPrompt.append("現在，請根據上述範例模式，");
                 combinedPrompt.append("為前面提到的實際檔案生成對應的 Karate 測試案例。\n");
             }
@@ -196,7 +196,7 @@ public class FewShotManager {
             // 沒有 Few-shot 範例時的處理
             if (customPrompt != null && !customPrompt.trim().isEmpty()) {
                 combinedPrompt.append("\n").append(CUSTOM_PROMPT_SEPARATOR).append("\n");
-                combinedPrompt.append("🚀 最終任務指導：\n");
+                combinedPrompt.append(" 最終任務指導：\n");
                 combinedPrompt.append("請根據前面的自定義指令，");
                 combinedPrompt.append("為提供的檔案生成相應的 Karate 測試案例。\n");
                 combinedPrompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n\n");
@@ -207,7 +207,7 @@ public class FewShotManager {
     }
 
     /**
-     * 🆕 快速建立完整的 Prompt（支援自定義 Prompt）
+     *  快速建立完整的 Prompt（支援自定義 Prompt）
      * @param mainPrompt 主要的 prompt 內容
      * @param userFiles 用戶選擇的檔案
      * @param customPrompt 用戶自定義的 prompt（可選）
@@ -219,7 +219,7 @@ public class FewShotManager {
     }
 
     /**
-     * 🆕 保持向後兼容的方法（無自定義 prompt）
+     *  保持向後兼容的方法（無自定義 prompt）
      * @param mainPrompt 主要的 prompt 內容
      * @param userFiles 用戶選擇的檔案
      * @return 組合後的完整 prompt
@@ -229,7 +229,7 @@ public class FewShotManager {
     }
 
     /**
-     * 🆕 僅使用自定義 Prompt 構建（適用於某些特殊場景）
+     *  僅使用自定義 Prompt 構建（適用於某些特殊場景）
      * @param customPrompt 用戶自定義的 prompt
      * @param userFiles 用戶選擇的檔案
      * @return 組合後的 prompt
@@ -242,14 +242,14 @@ public class FewShotManager {
         StringBuilder prompt = new StringBuilder();
 
         // 加入自定義指令
-        prompt.append("🎯 用戶自定義指令：\n");
+        prompt.append(" 用戶自定義指令：\n");
         prompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
         prompt.append(customPrompt.trim());
         prompt.append("\n").append(CUSTOM_PROMPT_SEPARATOR).append("\n\n");
 
         // 加入用戶檔案
         if (userFiles != null && !userFiles.isEmpty()) {
-            prompt.append("📂 需要處理的檔案：\n");
+            prompt.append(" 需要處理的檔案：\n");
             prompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
 
             for (int i = 0; i < userFiles.size(); i++) {
@@ -264,13 +264,13 @@ public class FewShotManager {
         }
 
         // 最終指導
-        prompt.append("🚀 請根據上述自定義指令處理提供的檔案。\n");
+        prompt.append(" 請根據上述自定義指令處理提供的檔案。\n");
 
         return prompt.toString();
     }
 
     /**
-     * 🆕 驗證自定義 Prompt 的合法性
+     *  驗證自定義 Prompt 的合法性
      * @param customPrompt 自定義 prompt
      * @return 驗證結果和建議
      */
@@ -329,7 +329,7 @@ public class FewShotManager {
     }
 
     /**
-     * 🆕 自定義 Prompt 驗證結果類別
+     *  自定義 Prompt 驗證結果類別
      */
     public static class PromptValidationResult {
         private final boolean valid;
@@ -363,7 +363,7 @@ public class FewShotManager {
         for (ExampleType type : ExampleType.values()) {
             String filePath = buildFilePath(type);
             boolean exists = Files.exists(Paths.get(filePath));
-            String status = exists ? "✅" : "❌";
+            String status = exists ? "" : "";
             results.add(String.format("%s %s: %s", status, type.getDescription(), filePath));
         }
 
@@ -371,22 +371,22 @@ public class FewShotManager {
     }
 
     /**
-     * 🆕 取得當前配置資訊（包含自定義 Prompt 支援資訊）
+     *  取得當前配置資訊（包含自定義 Prompt 支援資訊）
      * @return 配置資訊字串
      */
     public String getConfigInfo() {
         StringBuilder info = new StringBuilder();
-        info.append("🔧 Few-shot 管理器配置：\n");
-        info.append("   📂 基礎路徑: ").append(basePath).append("\n");
-        info.append("   📊 支援類型: ").append(ExampleType.values().length).append(" 種\n");
-        info.append("   🎯 自定義 Prompt: ✅ 已支援\n"); // 🆕 添加自定義 prompt 支援資訊
+        info.append(" Few-shot 管理器配置：\n");
+        info.append("    基礎路徑: ").append(basePath).append("\n");
+        info.append("    支援類型: ").append(ExampleType.values().length).append(" 種\n");
+        info.append("    自定義 Prompt:  已支援\n"); //  添加自定義 prompt 支援資訊
 
         for (ExampleType type : ExampleType.values()) {
             info.append("      - ").append(type.getDescription()).append(" (").append(type.getDefaultFileName()).append(")\n");
         }
 
-        // 🆕 添加自定義 Prompt 功能說明
-        info.append("\n📝 自定義 Prompt 功能：\n");
+        //  添加自定義 Prompt 功能說明
+        info.append("\n 自定義 Prompt 功能：\n");
         info.append("   - 支援用戶自定義指令\n");
         info.append("   - 優先級高於預設行為\n");
         info.append("   - 自動驗證和建議\n");
@@ -404,7 +404,7 @@ public class FewShotManager {
     }
 
     /**
-     * 🆕 取得自定義 Prompt 使用統計
+     *  取得自定義 Prompt 使用統計
      * @param customPrompt 自定義 prompt
      * @return 統計資訊
      */
@@ -423,7 +423,7 @@ public class FewShotManager {
     }
 
     /**
-     * 🆕 自定義 Prompt 統計資訊類別
+     *  自定義 Prompt 統計資訊類別
      */
     public static class CustomPromptStats {
         private final int charCount;

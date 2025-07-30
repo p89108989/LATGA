@@ -81,7 +81,7 @@ public class KarateFileSaver {
         private final String message;
         private final int successCount;
         private final int failureCount;
-        private final List<String> extractorWarnings; // 🆕 來自提取器的警告
+        private final List<String> extractorWarnings; //  來自提取器的警告
 
         public SaveResult(List<SavedFile> savedFiles, boolean success, String message) {
             this(savedFiles, success, message, new ArrayList<>());
@@ -101,8 +101,8 @@ public class KarateFileSaver {
         public String getMessage() { return message; }
         public int getSuccessCount() { return successCount; }
         public int getFailureCount() { return failureCount; }
-        public List<String> getExtractorWarnings() { return extractorWarnings; } // 🆕
-        public boolean hasWarnings() { return !extractorWarnings.isEmpty(); } // 🆕
+        public List<String> getExtractorWarnings() { return extractorWarnings; } // 
+        public boolean hasWarnings() { return !extractorWarnings.isEmpty(); } // 
     }
 
     /**
@@ -161,7 +161,7 @@ public class KarateFileSaver {
     }
 
     /**
-     * 🌟 從質量保證結果保存（更新為使用 TestCaseVerification）
+     *  從質量保證結果保存（更新為使用 TestCaseVerification）
      */
     public SaveResult saveFromQualityAssuranceResult(TestCaseVerification.QualityAssuranceResult qaResult,
                                                      List<FileData> originalFiles) {
@@ -173,14 +173,14 @@ public class KarateFileSaver {
     }
 
     /**
-     * 🌟 從任意內容智能保存（新增方法）
+     *  從任意內容智能保存（新增方法）
      */
     public SaveResult saveFromContent(String content, List<FileData> originalFiles, String contentSource) {
         if (content == null || content.trim().isEmpty()) {
             return new SaveResult(null, false, "內容為空無法保存");
         }
 
-        // 🔧 使用增強的提取器進行內容提取（啟用進階清理）
+        //  使用增強的提取器進行內容提取（啟用進階清理）
         KarateContentExtractor.ExtractionResult extractionResult = extractor.extractKarateFeatures(content, true);
 
         if (!extractionResult.isSuccess()) {
@@ -193,7 +193,7 @@ public class KarateFileSaver {
     }
 
     /**
-     * 🆕 從綜合驗證結果保存
+     *  從綜合驗證結果保存
      */
     public SaveResult saveFromComprehensiveVerificationResult(TestCaseVerification.ComprehensiveVerificationResult verificationResult,
                                                               List<FileData> originalFiles) {
@@ -208,7 +208,7 @@ public class KarateFileSaver {
     }
 
     /**
-     * 🆕 從增強質量保證結果保存
+     *  從增強質量保證結果保存
      */
     public SaveResult saveFromEnhancedQualityAssuranceResult(TestCaseVerification.EnhancedQualityAssuranceResult enhancedResult,
                                                              List<FileData> originalFiles) {
@@ -248,7 +248,7 @@ public class KarateFileSaver {
     }
 
     /**
-     * 🔧 內部保存方法（支援提取器警告）
+     *  內部保存方法（支援提取器警告）
      */
     private SaveResult saveKarateFeatures(List<KarateContentExtractor.KarateFeature> features,
                                           List<FileData> originalFiles,
@@ -313,7 +313,7 @@ public class KarateFileSaver {
                     return parentDir.toString();
                 }
             } catch (Exception e) {
-                System.err.println("⚠️  無法確定原始檔案目錄，使用當前目錄: " + e.getMessage());
+                System.err.println("  無法確定原始檔案目錄，使用當前目錄: " + e.getMessage());
             }
         }
 
@@ -397,13 +397,13 @@ public class KarateFileSaver {
 
             long fileSize = Files.size(filePath);
             String cleanedIndicator = wasContentCleaned ? " [已清理]" : "";
-            System.out.println("   ✅ " + fileName + cleanedIndicator + " 已保存至：" + filePath + " (大小: " + fileSize + " bytes)");
+            System.out.println("    " + fileName + cleanedIndicator + " 已保存至：" + filePath + " (大小: " + fileSize + " bytes)");
 
             return new SavedFile(fileName, filePath.toString(), true, null, fileSize, wasContentCleaned);
 
         } catch (IOException e) {
             String errorMessage = "保存檔案失敗: " + e.getMessage();
-            System.err.println("   ❌ " + fileName + " - " + errorMessage);
+            System.err.println("    " + fileName + " - " + errorMessage);
             return new SavedFile(fileName, "", false, errorMessage, 0, false);
         }
     }
@@ -423,7 +423,7 @@ public class KarateFileSaver {
     }
 
     /**
-     * 🆕 更新提取器配置
+     *  更新提取器配置
      */
     public void updateExtractorConfig(boolean enableAdvancedCleaning, boolean strictValidation) {
         extractor.setEnableAdvancedCleaning(enableAdvancedCleaning);
@@ -438,7 +438,7 @@ public class KarateFileSaver {
     }
 
     /**
-     * 🆕 獲取提取器實例
+     *  獲取提取器實例
      */
     public KarateContentExtractor getExtractor() {
         return this.extractor;

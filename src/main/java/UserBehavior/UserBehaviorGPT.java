@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * UserBehavior Gherkin 文件生成服務 - 🆕 支援自定義 Prompt
+ * UserBehavior Gherkin 文件生成服務 -  支援自定義 Prompt
  * 重構版本：作為服務集成到 LATGA 系統中
  * 功能：分析前端程式碼，生成標準的 Gherkin BDD 測試案例
  *
@@ -35,7 +35,7 @@ public class UserBehaviorGPT {
     // 輸出檔案路徑
     private static final String OUTPUT_DIRECTORY = "output/gherkin";
 
-    // 🆕 自定義 Prompt 分隔符
+    //  自定義 Prompt 分隔符
     private static final String CUSTOM_PROMPT_SEPARATOR = "=".repeat(80);
 
     /**
@@ -53,27 +53,27 @@ public class UserBehaviorGPT {
      * @throws Exception 處理過程中的異常
      */
     public GherkinGenerationResult generateGherkin(List<FileData> frontendFiles) throws Exception {
-        // 🆕 調用支援自定義 prompt 的版本，但傳入 null
+        //  調用支援自定義 prompt 的版本，但傳入 null
         return generateGherkin(frontendFiles, null);
     }
 
     /**
-     * 🆕 生成 Gherkin 測試案例 - 支援自定義 Prompt
+     *  生成 Gherkin 測試案例 - 支援自定義 Prompt
      * @param frontendFiles 前端程式碼檔案列表
      * @param customPrompt 用戶自定義的 prompt（可選）
      * @return 生成的 Gherkin 內容
      * @throws Exception 處理過程中的異常
      */
     public GherkinGenerationResult generateGherkin(List<FileData> frontendFiles, String customPrompt) throws Exception {
-        System.out.println("\n🎭 UserBehaviorGPT 開始生成 Gherkin 測試案例...");
+        System.out.println("\n UserBehaviorGPT 開始生成 Gherkin 測試案例...");
 
-        // 🆕 顯示自定義 Prompt 狀態
+        //  顯示自定義 Prompt 狀態
         if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-            System.out.println("📝 自定義 Prompt: ✅ 已提供 (長度: " + customPrompt.length() + " 字元)");
-            System.out.println("📝 Prompt 預覽: " + customPrompt.substring(0, Math.min(100, customPrompt.length())) +
+            System.out.println(" 自定義 Prompt:  已提供 (長度: " + customPrompt.length() + " 字元)");
+            System.out.println(" Prompt 預覽: " + customPrompt.substring(0, Math.min(100, customPrompt.length())) +
                     (customPrompt.length() > 100 ? "..." : ""));
         } else {
-            System.out.println("📝 自定義 Prompt: ❌ 未提供，使用預設 Gherkin 模式");
+            System.out.println(" 自定義 Prompt:  未提供，使用預設 Gherkin 模式");
         }
 
         // 驗證輸入
@@ -81,7 +81,7 @@ public class UserBehaviorGPT {
             throw new IllegalArgumentException("前端檔案列表不能為空");
         }
 
-        // 🆕 驗證自定義 Prompt 安全性
+        //  驗證自定義 Prompt 安全性
         if (customPrompt != null && !customPrompt.trim().isEmpty()) {
             validateCustomPrompt(customPrompt);
         }
@@ -90,25 +90,25 @@ public class UserBehaviorGPT {
         List<FileData> validFrontendFiles = filterFrontendFiles(frontendFiles);
 
         if (validFrontendFiles.isEmpty()) {
-            System.out.println("⚠️ 未發現前端相關檔案，將使用所有提供的檔案");
+            System.out.println(" 未發現前端相關檔案，將使用所有提供的檔案");
             validFrontendFiles = frontendFiles;
         }
 
-        System.out.println("📋 處理前端檔案：");
+        System.out.println(" 處理前端檔案：");
         for (FileData file : validFrontendFiles) {
-            System.out.printf("   📄 %s (%,d 字元)\n",
+            System.out.printf("    %s (%,d 字元)\n",
                     file.getFileName(), file.getContent().length());
         }
 
         // 載入 Gherkin prompt
         String mainPrompt = loadGherkinPrompt();
 
-        // 🆕 建立完整的 Prompt（支援自定義 prompt）
+        //  建立完整的 Prompt（支援自定義 prompt）
         String combinedPrompt = buildGherkinPromptWithCustom(mainPrompt, validFrontendFiles, customPrompt);
 
-        System.out.println("🤖 正在分析前端程式碼並生成 Gherkin BDD 測試案例...");
+        System.out.println(" 正在分析前端程式碼並生成 Gherkin BDD 測試案例...");
         if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-            System.out.println("🎯 將應用自定義指令到 Gherkin 生成中");
+            System.out.println(" 將應用自定義指令到 Gherkin 生成中");
         }
 
         // 調用 AI 生成 Gherkin
@@ -116,9 +116,9 @@ public class UserBehaviorGPT {
         ChatResponse response = chatModel.call(prompt);
         String gherkinContent = response.getResult().getOutput().getText();
 
-        System.out.println("✅ Gherkin 測試案例生成完成");
+        System.out.println(" Gherkin 測試案例生成完成");
         if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-            System.out.println("🎯 自定義指令已成功整合到 Gherkin 中");
+            System.out.println(" 自定義指令已成功整合到 Gherkin 中");
         }
 
         // 建立結果物件
@@ -138,7 +138,7 @@ public class UserBehaviorGPT {
     }
 
     /**
-     * 🆕 驗證自定義 Prompt 的基本安全性和合法性
+     *  驗證自定義 Prompt 的基本安全性和合法性
      */
     private void validateCustomPrompt(String customPrompt) {
         if (customPrompt == null) {
@@ -149,7 +149,7 @@ public class UserBehaviorGPT {
 
         // 長度檢查
         if (trimmed.length() > 3000) {
-            System.out.println("⚠️ 自定義 Prompt 過長 (" + trimmed.length() + " 字元)，建議控制在 2000 字元以內");
+            System.out.println(" 自定義 Prompt 過長 (" + trimmed.length() + " 字元)，建議控制在 2000 字元以內");
         }
 
         // 基本安全檢查
@@ -158,17 +158,17 @@ public class UserBehaviorGPT {
 
         for (String issue : potentialIssues) {
             if (lowerPrompt.contains(issue)) {
-                System.out.println("⚠️ 自定義 Prompt 包含可能影響 Gherkin 生成的指令: " + issue);
-                System.out.println("💡 建議調整指令內容，確保與 Gherkin BDD 格式相容");
+                System.out.println(" 自定義 Prompt 包含可能影響 Gherkin 生成的指令: " + issue);
+                System.out.println(" 建議調整指令內容，確保與 Gherkin BDD 格式相容");
                 break;
             }
         }
 
-        System.out.println("✅ 自定義 Prompt 基本驗證通過");
+        System.out.println(" 自定義 Prompt 基本驗證通過");
     }
 
     /**
-     * 🆕 建立完整的 Gherkin Prompt（支援自定義 Prompt）
+     *  建立完整的 Gherkin Prompt（支援自定義 Prompt）
      */
     private String buildGherkinPromptWithCustom(String mainPrompt, List<FileData> frontendFiles, String customPrompt) {
         StringBuilder prompt = new StringBuilder();
@@ -176,14 +176,14 @@ public class UserBehaviorGPT {
         // 1. 加入主要 Gherkin prompt
         prompt.append(mainPrompt).append("\n\n");
 
-        // 🆕 2. 如果有自定義 prompt，優先加入
+        //  2. 如果有自定義 prompt，優先加入
         if (customPrompt != null && !customPrompt.trim().isEmpty()) {
             prompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
-            prompt.append("🎯 用戶自定義 Gherkin 生成指令（優先級：高）:\n");
+            prompt.append(" 用戶自定義 Gherkin 生成指令（優先級：高）:\n");
             prompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
             prompt.append(customPrompt.trim()).append("\n");
             prompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n");
-            prompt.append("📌 重要提醒：請在生成 Gherkin 測試案例時特別注意並優先遵循上述自定義指令。\n");
+            prompt.append(" 重要提醒：請在生成 Gherkin 測試案例時特別注意並優先遵循上述自定義指令。\n");
             prompt.append("如果自定義指令與標準 Gherkin 格式有衝突，請以自定義指令為準並適當調整格式。\n");
             prompt.append(CUSTOM_PROMPT_SEPARATOR).append("\n\n");
         }
@@ -198,11 +198,11 @@ public class UserBehaviorGPT {
             prompt.append("-".repeat(50)).append("\n\n");
         }
 
-        // 🆕 4. 最終指導（根據是否有自定義 prompt）
+        //  4. 最終指導（根據是否有自定義 prompt）
         prompt.append("=== 請根據上述前端程式碼生成 Gherkin 測試案例 ===\n");
 
         if (customPrompt != null && !customPrompt.trim().isEmpty()) {
-            prompt.append("🎯 生成要求：\n");
+            prompt.append(" 生成要求：\n");
             prompt.append("- 嚴格遵循前面提到的自定義指令\n");
             prompt.append("- 確保生成的測試案例符合 BDD 最佳實踐\n");
             prompt.append("- 如有衝突，以自定義指令為準\n");
@@ -268,10 +268,10 @@ public class UserBehaviorGPT {
 
         try {
             String content = Files.readString(promptPath, StandardCharsets.UTF_8).trim();
-            System.out.println("✅ 已載入 Gherkin prompt 檔案: " + PROMPT_FILE);
+            System.out.println(" 已載入 Gherkin prompt 檔案: " + PROMPT_FILE);
             return content;
         } catch (IOException e) {
-            System.out.println("⚠️ 無法讀取 prompt 檔案，使用預設 prompt: " + e.getMessage());
+            System.out.println(" 無法讀取 prompt 檔案，使用預設 prompt: " + e.getMessage());
             return getDefaultGherkinPrompt();
         }
     }
@@ -325,7 +325,7 @@ public class UserBehaviorGPT {
     }
 
     /**
-     * 🆕 保存 Gherkin Feature 文件（支援自定義 Prompt 標記）
+     *  保存 Gherkin Feature 文件（支援自定義 Prompt 標記）
      * @param gherkinContent Gherkin 內容
      * @param hasCustomPrompt 是否使用了自定義 prompt
      * @return 保存的檔案路徑
@@ -342,14 +342,14 @@ public class UserBehaviorGPT {
             String timestamp = java.time.LocalDateTime.now()
                     .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
 
-            // 🆕 根據是否使用自定義 prompt 調整檔案名
+            //  根據是否使用自定義 prompt 調整檔案名
             String fileName = hasCustomPrompt ?
                     "user_behavior_custom_" + timestamp + ".feature" :
                     "user_behavior_" + timestamp + ".feature";
 
             Path outputPath = outputDir.resolve(fileName);
 
-            // 🆕 在檔案開頭添加生成資訊註解
+            //  在檔案開頭添加生成資訊註解
             StringBuilder contentWithHeader = new StringBuilder();
             contentWithHeader.append("# Generated by UserBehaviorGPT\n");
             contentWithHeader.append("# Timestamp: ").append(timestamp).append("\n");
@@ -363,16 +363,16 @@ public class UserBehaviorGPT {
             Files.writeString(outputPath, contentWithHeader.toString(), StandardCharsets.UTF_8);
 
             String filePath = outputPath.toAbsolutePath().toString();
-            System.out.println("✅ Gherkin Feature 文件已保存至: " + filePath);
-            System.out.println("📄 檔案大小: " + Files.size(outputPath) + " bytes");
+            System.out.println(" Gherkin Feature 文件已保存至: " + filePath);
+            System.out.println(" 檔案大小: " + Files.size(outputPath) + " bytes");
             if (hasCustomPrompt) {
-                System.out.println("🎯 檔案包含自定義指令生成的內容");
+                System.out.println(" 檔案包含自定義指令生成的內容");
             }
 
             return filePath;
 
         } catch (IOException e) {
-            System.out.println("❌ 保存 Gherkin 文件失敗: " + e.getMessage());
+            System.out.println(" 保存 Gherkin 文件失敗: " + e.getMessage());
             return null;
         }
     }
@@ -396,12 +396,12 @@ public class UserBehaviorGPT {
                 Files.createDirectories(outputDir);
             }
         } catch (IOException e) {
-            System.err.println("❌ 無法建立輸出目錄: " + e.getMessage());
+            System.err.println(" 無法建立輸出目錄: " + e.getMessage());
         }
     }
 
     /**
-     * 🆕 檢查是否支援自定義 Prompt
+     *  檢查是否支援自定義 Prompt
      * @return true 表示支援
      */
     public boolean supportsCustomPrompt() {
@@ -409,7 +409,7 @@ public class UserBehaviorGPT {
     }
 
     /**
-     * 🆕 取得自定義 Prompt 使用建議
+     *  取得自定義 Prompt 使用建議
      * @return 使用建議字串
      */
     public String getCustomPromptSuggestion() {

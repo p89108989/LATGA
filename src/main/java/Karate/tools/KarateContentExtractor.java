@@ -19,7 +19,7 @@ public class KarateContentExtractor {
         private final List<KarateFeature> features;
         private final boolean success;
         private final String message;
-        private final List<String> warnings; // 🆕 新增警告訊息
+        private final List<String> warnings; //  新增警告訊息
 
         public ExtractionResult(List<KarateFeature> features, boolean success, String message) {
             this(features, success, message, new ArrayList<>());
@@ -36,8 +36,8 @@ public class KarateContentExtractor {
         public boolean isSuccess() { return success; }
         public String getMessage() { return message; }
         public int getFeatureCount() { return features.size(); }
-        public List<String> getWarnings() { return warnings; } // 🆕
-        public boolean hasWarnings() { return !warnings.isEmpty(); } // 🆕
+        public List<String> getWarnings() { return warnings; } // 
+        public boolean hasWarnings() { return !warnings.isEmpty(); } // 
     }
 
     /**
@@ -47,7 +47,7 @@ public class KarateContentExtractor {
         private final String content;
         private final String featureName;
         private final String cleanFileName;
-        private final boolean wasContentCleaned; // 🆕 是否經過內容清理
+        private final boolean wasContentCleaned; //  是否經過內容清理
 
         public KarateFeature(String content, String featureName, String cleanFileName) {
             this(content, featureName, cleanFileName, false);
@@ -63,7 +63,7 @@ public class KarateContentExtractor {
         public String getContent() { return content; }
         public String getFeatureName() { return featureName; }
         public String getCleanFileName() { return cleanFileName; }
-        public boolean wasContentCleaned() { return wasContentCleaned; } // 🆕
+        public boolean wasContentCleaned() { return wasContentCleaned; } // 
 
         public int getScenarioCount() {
             return countScenarios(content);
@@ -81,7 +81,7 @@ public class KarateContentExtractor {
     }
 
     /**
-     * 🆕 內容清理結果類
+     *  內容清理結果類
      */
     public static class ContentCleaningResult {
         private final String originalContent;
@@ -103,7 +103,7 @@ public class KarateContentExtractor {
         public boolean hasWarnings() { return !warnings.isEmpty(); }
     }
 
-    // 🆕 配置選項
+    //  配置選項
     private boolean enableAdvancedCleaning = true;
     private boolean strictValidation = true;
 
@@ -118,7 +118,7 @@ public class KarateContentExtractor {
     }
 
     /**
-     * 🆕 從 AI 回應中提取 Karate Feature 內容（支援進階清理）
+     *  從 AI 回應中提取 Karate Feature 內容（支援進階清理）
      *
      * @param aiResponse AI 的回應文本
      * @param enableAdvancedCleaning 是否啟用進階內容清理
@@ -133,7 +133,7 @@ public class KarateContentExtractor {
         List<KarateFeature> features = new ArrayList<>();
         String processedContent = aiResponse;
 
-        // 🆕 Step 1: 進階內容清理（如果啟用）
+        //  Step 1: 進階內容清理（如果啟用）
         if (enableAdvancedCleaning) {
             ContentCleaningResult cleaningResult = performAdvancedCleaning(aiResponse);
             processedContent = cleaningResult.getCleanedContent();
@@ -165,7 +165,7 @@ public class KarateContentExtractor {
     }
 
     /**
-     * 🆕 執行進階內容清理
+     *  執行進階內容清理
      */
     public ContentCleaningResult performAdvancedCleaning(String rawContent) {
         List<String> warnings = new ArrayList<>();
@@ -222,7 +222,7 @@ public class KarateContentExtractor {
     }
 
     /**
-     * 🆕 移除分析報告區塊
+     *  移除分析報告區塊
      */
     private String removeAnalysisBlocks(String content, List<String> warnings) {
         // 移除檢查結果區塊
@@ -253,7 +253,7 @@ public class KarateContentExtractor {
     }
 
     /**
-     * 🆕 執行標準提取流程
+     *  執行標準提取流程
      */
     private List<KarateFeature> performStandardExtraction(String content, List<String> warnings) {
         List<KarateFeature> features = new ArrayList<>();
@@ -275,7 +275,7 @@ public class KarateContentExtractor {
     }
 
     /**
-     * 🆕 執行寬鬆提取（容錯模式）
+     *  執行寬鬆提取（容錯模式）
      */
     private List<KarateFeature> performLenientExtraction(String content, List<String> warnings) {
         List<KarateFeature> features = new ArrayList<>();
@@ -366,7 +366,7 @@ public class KarateContentExtractor {
     }
 
     /**
-     * 🆕 檢查內容是否為有效的 Karate Feature（支援嚴格/寬鬆模式）
+     *  檢查內容是否為有效的 Karate Feature（支援嚴格/寬鬆模式）
      */
     public boolean isValidKarateContent(String content, boolean strict) {
         if (content == null || content.trim().isEmpty()) {
@@ -405,16 +405,16 @@ public class KarateContentExtractor {
         content = content.replaceAll("```[a-zA-Z]*\\s*\\n", "");
         content = content.replaceAll("```\\s*$", "");
 
-        // 🆕 移除HTML標記（如果有）
+        //  移除HTML標記（如果有）
         content = content.replaceAll("<[^>]+>", "");
 
-        // 🆕 移除行號（如果有）
+        //  移除行號（如果有）
         content = content.replaceAll("^\\d+\\s*[:|.]\\s*", "");
 
         // 移除過多的空行
         content = content.replaceAll("\\n{3,}", "\n\n");
 
-        // 🆕 移除行首尾多餘的空白字符
+        //  移除行首尾多餘的空白字符
         String[] lines = content.split("\n");
         StringBuilder cleanedContent = new StringBuilder();
         for (String line : lines) {
@@ -492,7 +492,7 @@ public class KarateContentExtractor {
         return analysis.toString();
     }
 
-    // 🆕 配置方法
+    //  配置方法
     public void setEnableAdvancedCleaning(boolean enableAdvancedCleaning) {
         this.enableAdvancedCleaning = enableAdvancedCleaning;
     }

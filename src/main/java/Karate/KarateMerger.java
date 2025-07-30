@@ -8,7 +8,7 @@ import org.springframework.ai.openai.OpenAiChatModel;
 import Karate.tools.KarateFileSaver;
 import Karate.tools.KarateContentExtractor;
 import Karate.tools.KarateExecutor;
-import Karate.tools.TestCaseVerification; // 🆕 更新為統一的驗證服務
+import Karate.tools.TestCaseVerification; //  更新為統一的驗證服務
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -26,7 +26,7 @@ public class KarateMerger {
 
     private final KarateContentExtractor contentExtractor;
     private final KarateExecutor executor;
-    private final TestCaseVerification verificationService; // 🆕 統一的驗證和質量保證服務
+    private final TestCaseVerification verificationService; //  統一的驗證和質量保證服務
     private final KarateFileSaver fileSaver;
 
     /**
@@ -114,7 +114,7 @@ public class KarateMerger {
         private final List<String> errors;
         private final MergeStatistics statistics;
         private final KarateExecutor.ExecutionResult syntaxValidationResult;
-        private final TestCaseVerification.AnalysisResult qualityAssuranceResult; // 🆕 更新類型
+        private final TestCaseVerification.AnalysisResult qualityAssuranceResult; //  更新類型
 
         public MergeResult(Builder builder) {
             this.mergedContent = builder.mergedContent;
@@ -135,15 +135,15 @@ public class KarateMerger {
         public List<String> getErrors() { return errors; }
         public MergeStatistics getStatistics() { return statistics; }
         public KarateExecutor.ExecutionResult getSyntaxValidationResult() { return syntaxValidationResult; }
-        public TestCaseVerification.AnalysisResult getQualityAssuranceResult() { return qualityAssuranceResult; } // 🆕 更新類型
+        public TestCaseVerification.AnalysisResult getQualityAssuranceResult() { return qualityAssuranceResult; } //  更新類型
 
         public boolean hasWarnings() { return !warnings.isEmpty(); }
         public boolean hasErrors() { return !errors.isEmpty(); }
 
         public String getSummary() {
             StringBuilder summary = new StringBuilder();
-            summary.append("🔗 合併結果摘要:\n");
-            summary.append(String.format("   狀態: %s\n", success ? "✅ 成功" : "❌ 失敗"));
+            summary.append(" 合併結果摘要:\n");
+            summary.append(String.format("   狀態: %s\n", success ? " 成功" : " 失敗"));
 
             if (statistics != null) {
                 summary.append(String.format("   總Scenario數: %d\n", statistics.getTotalScenarios()));
@@ -171,7 +171,7 @@ public class KarateMerger {
             private List<String> errors = new ArrayList<>();
             private MergeStatistics statistics;
             private KarateExecutor.ExecutionResult syntaxValidationResult;
-            private TestCaseVerification.AnalysisResult qualityAssuranceResult; // 🆕 更新類型
+            private TestCaseVerification.AnalysisResult qualityAssuranceResult; //  更新類型
 
             public Builder mergedContent(String content) { this.mergedContent = content; return this; }
             public Builder success(boolean success) { this.success = success; return this; }
@@ -180,7 +180,7 @@ public class KarateMerger {
             public Builder addError(String error) { this.errors.add(error); return this; }
             public Builder statistics(MergeStatistics stats) { this.statistics = stats; return this; }
             public Builder syntaxValidationResult(KarateExecutor.ExecutionResult result) { this.syntaxValidationResult = result; return this; }
-            public Builder qualityAssuranceResult(TestCaseVerification.AnalysisResult result) { this.qualityAssuranceResult = result; return this; } // 🆕 更新類型
+            public Builder qualityAssuranceResult(TestCaseVerification.AnalysisResult result) { this.qualityAssuranceResult = result; return this; } //  更新類型
 
             public MergeResult build() { return new MergeResult(this); }
         }
@@ -230,7 +230,7 @@ public class KarateMerger {
     public KarateMerger(OpenAiChatModel chatModel) {
         this.contentExtractor = new KarateContentExtractor();
         this.executor = new KarateExecutor();
-        // 🆕 使用統一的 TestCaseVerification 服務
+        //  使用統一的 TestCaseVerification 服務
         this.verificationService = chatModel != null ? new TestCaseVerification(chatModel) : null;
         this.fileSaver = new KarateFileSaver();
     }
@@ -247,7 +247,7 @@ public class KarateMerger {
      */
     public MergeResult mergeKarateFiles(String firstFileContent, String secondFileContent, MergeConfig config) {
         System.out.println("\n" + "=".repeat(60));
-        System.out.println("🔗 開始Karate檔案合併流程");
+        System.out.println(" 開始Karate檔案合併流程");
         System.out.println("=".repeat(60));
 
         MergeResult.Builder resultBuilder = new MergeResult.Builder();
@@ -290,11 +290,11 @@ public class KarateMerger {
             resultBuilder.success(true);
             resultBuilder.message("成功合併2個Karate檔案，共" + statistics.getTotalScenarios() + "個Scenario");
 
-            System.out.println("✅ 合併完成！");
+            System.out.println(" 合併完成！");
             return resultBuilder.build();
 
         } catch (Exception e) {
-            System.err.println("❌ 合併過程發生錯誤：" + e.getMessage());
+            System.err.println(" 合併過程發生錯誤：" + e.getMessage());
             return resultBuilder
                     .success(false)
                     .message("合併過程發生錯誤：" + e.getMessage())
@@ -638,7 +638,7 @@ public class KarateMerger {
      * 執行語法驗證
      */
     private void performSyntaxValidation(String mergedContent, MergeResult.Builder builder) {
-        System.out.println("🔍 執行語法驗證...");
+        System.out.println(" 執行語法驗證...");
 
         KarateExecutor.ExecutionResult validationResult = executor.validateSyntax(mergedContent, "merged_feature");
         builder.syntaxValidationResult(validationResult);
@@ -656,13 +656,13 @@ public class KarateMerger {
     }
 
     /**
-     * 🆕 執行質量保證（更新為使用 TestCaseVerification）
+     *  執行質量保證（更新為使用 TestCaseVerification）
      */
     private void performQualityAssurance(String mergedContent, MergeResult.Builder builder) {
-        System.out.println("🔍 執行質量保證檢查...");
+        System.out.println(" 執行質量保證檢查...");
 
         try {
-            // 🆕 使用統一的驗證服務進行靜態分析
+            //  使用統一的驗證服務進行靜態分析
             TestCaseVerification.AnalysisResult analysisResult =
                     verificationService.performStaticAnalysis(mergedContent, new ArrayList<>(), null);
 
@@ -673,7 +673,7 @@ public class KarateMerger {
                 analysisResult.getFailedItems().forEach(item -> builder.addWarning("QA: " + item));
             }
 
-            System.out.println("✅ 質量保證檢查完成");
+            System.out.println(" 質量保證檢查完成");
 
         } catch (Exception e) {
             builder.addWarning("質量保證檢查失敗：" + e.getMessage());
@@ -738,17 +738,17 @@ public class KarateMerger {
     }
 
     /**
-     * 🆕 取得服務資訊（更新為使用 TestCaseVerification）
+     *  取得服務資訊（更新為使用 TestCaseVerification）
      */
     public String getServiceInfo() {
         StringBuilder info = new StringBuilder();
-        info.append("🔗 Karate檔案合併服務資訊\n");
+        info.append(" Karate檔案合併服務資訊\n");
         info.append("=".repeat(40)).append("\n");
-        info.append("內容提取器: ").append(contentExtractor != null ? "✅ 可用" : "❌ 不可用").append("\n");
-        info.append("執行器: ").append(executor != null ? "✅ 可用" : "❌ 不可用").append("\n");
-        info.append("驗證服務: ").append(verificationService != null ? "✅ 可用" : "❌ 不可用").append("\n"); // 🆕 更新說明
-        info.append("檔案保存器: ").append(fileSaver != null ? "✅ 可用" : "❌ 不可用").append("\n");
-        info.append("整體狀態: ").append(isReady() ? "✅ 就緒" : "❌ 未就緒").append("\n");
+        info.append("內容提取器: ").append(contentExtractor != null ? " 可用" : " 不可用").append("\n");
+        info.append("執行器: ").append(executor != null ? " 可用" : " 不可用").append("\n");
+        info.append("驗證服務: ").append(verificationService != null ? " 可用" : " 不可用").append("\n"); //  更新說明
+        info.append("檔案保存器: ").append(fileSaver != null ? " 可用" : " 不可用").append("\n");
+        info.append("整體狀態: ").append(isReady() ? " 就緒" : " 未就緒").append("\n");
 
         return info.toString();
     }

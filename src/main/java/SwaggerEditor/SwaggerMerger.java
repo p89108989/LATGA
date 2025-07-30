@@ -64,7 +64,7 @@ public class SwaggerMerger {
             JsonNode aiNode = mapper.readTree(aiContent);
 
             if (enableVerboseLogging) {
-                System.out.println("   🔄 正在進行智能比對與合併...");
+                System.out.println("    正在進行智能比對與合併...");
             }
 
             // 執行智能合併
@@ -75,8 +75,8 @@ public class SwaggerMerger {
 
         } catch (Exception e) {
             if (enableVerboseLogging) {
-                System.err.println("   ❌ 合併失敗：" + e.getMessage());
-                System.err.println("   💡 將使用 AI 原始回應內容");
+                System.err.println("    合併失敗：" + e.getMessage());
+                System.err.println("    將使用 AI 原始回應內容");
             }
             return aiContent; // 如果合併失敗，使用 AI 版本
         }
@@ -99,7 +99,7 @@ public class SwaggerMerger {
         // 如果原始版本為 null，使用 AI 版本
         if (original == null || original.isMissingNode()) {
             if (enableVerboseLogging && !path.isEmpty()) {
-                System.out.println("   ➕ 新增：" + path);
+                System.out.println("    新增：" + path);
             }
             return aiUpdated;
         }
@@ -107,7 +107,7 @@ public class SwaggerMerger {
         // 如果節點類型不同，優先使用 AI 版本
         if (original.getNodeType() != aiUpdated.getNodeType()) {
             if (enableVerboseLogging) {
-                System.out.println("   🔄 類型變更：" + path + " (" +
+                System.out.println("    類型變更：" + path + " (" +
                         original.getNodeType() + " → " + aiUpdated.getNodeType() + ")");
             }
             return aiUpdated;
@@ -126,7 +126,7 @@ public class SwaggerMerger {
         // 處理基本值節點
         if (!original.equals(aiUpdated)) {
             if (enableVerboseLogging) {
-                System.out.println("   ✏️  修改：" + path + " (" +
+                System.out.println("     修改：" + path + " (" +
                         formatValueForLog(original) + " → " + formatValueForLog(aiUpdated) + ")");
             }
             return aiUpdated;
@@ -161,7 +161,7 @@ public class SwaggerMerger {
             } else {
                 // 新欄位，直接添加
                 if (enableVerboseLogging) {
-                    System.out.println("   ➕ 新增欄位：" + fieldPath);
+                    System.out.println("    新增欄位：" + fieldPath);
                 }
                 result.set(fieldName, aiValue);
             }
@@ -187,7 +187,7 @@ public class SwaggerMerger {
         // 比較陣列內容
         if (!original.equals(aiUpdated)) {
             if (enableVerboseLogging) {
-                System.out.println("   🔄 陣列更新：" + path +
+                System.out.println("    陣列更新：" + path +
                         " (長度: " + original.size() + " → " + aiUpdated.size() + ")");
             }
 
@@ -197,7 +197,7 @@ public class SwaggerMerger {
             } else {
                 // 如果 AI 的陣列更短，可能是部分更新，需要更謹慎
                 if (enableVerboseLogging) {
-                    System.out.println("   ⚠️  AI 陣列較短，保留原始版本");
+                    System.out.println("     AI 陣列較短，保留原始版本");
                 }
                 return original;
             }

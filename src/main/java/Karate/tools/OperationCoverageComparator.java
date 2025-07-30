@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 🔍 操作覆蓋比對器 - 比較 API 文件中的操作與 Karate 測試中的實現
+ *  操作覆蓋比對器 - 比較 API 文件中的操作與 Karate 測試中的實現
  * 使用正則表達式進行精確比對，生成詳細的覆蓋率報告
  *
  * @author StaticBlackbox Team
@@ -91,15 +91,15 @@ public class OperationCoverageComparator {
             StringBuilder report = new StringBuilder();
 
             report.append("=".repeat(60)).append("\n");
-            report.append("🔍 API 操作覆蓋率比對報告\n");
+            report.append(" API 操作覆蓋率比對報告\n");
             report.append("=".repeat(60)).append("\n");
 
-            report.append(String.format("📊 總體覆蓋率: %.1f%% (%d/%d)\n\n",
+            report.append(String.format(" 總體覆蓋率: %.1f%% (%d/%d)\n\n",
                     coveragePercentage, coveredOperations.size(), expectedOperations.size()));
 
             // 已覆蓋的操作
             if (!coveredOperations.isEmpty()) {
-                report.append("✅ 已正確實現的 API 操作:\n");
+                report.append(" 已正確實現的 API 操作:\n");
                 for (ApiOperationExtractor.ApiOperation op : coveredOperations) {
                     report.append(String.format("   • %s\n", op.toString()));
                 }
@@ -108,7 +108,7 @@ public class OperationCoverageComparator {
 
             // 缺失的操作
             if (!missingOperations.isEmpty()) {
-                report.append("❌ 缺失的 API 操作（需要補充）:\n");
+                report.append(" 缺失的 API 操作（需要補充）:\n");
                 for (ApiOperationExtractor.ApiOperation op : missingOperations) {
                     report.append(String.format("   • %s", op.toString()));
                     if (op.getSummary() != null) {
@@ -121,7 +121,7 @@ public class OperationCoverageComparator {
 
             // 額外的操作
             if (!extraOperations.isEmpty()) {
-                report.append("⚠️ 額外實現的操作（可能是錯誤或多餘）:\n");
+                report.append(" 額外實現的操作（可能是錯誤或多餘）:\n");
                 for (ApiOperationExtractor.ApiOperation op : extraOperations) {
                     report.append(String.format("   • %s\n", op.toString()));
                 }
@@ -129,7 +129,7 @@ public class OperationCoverageComparator {
             }
 
             // HTTP 方法統計
-            report.append("📋 HTTP 方法統計:\n");
+            report.append(" HTTP 方法統計:\n");
             Map<String, Integer> expectedCounts = countByMethod(expectedOperations);
             Map<String, Integer> implementedCounts = countByMethod(implementedOperations);
 
@@ -139,7 +139,7 @@ public class OperationCoverageComparator {
             for (String method : allMethods) {
                 int expected = expectedCounts.getOrDefault(method, 0);
                 int implemented = implementedCounts.getOrDefault(method, 0);
-                String status = implemented >= expected ? "✅" : "❌";
+                String status = implemented >= expected ? "" : "";
                 report.append(String.format("   %s %s: %d/%d\n", status, method, implemented, expected));
             }
 
@@ -162,12 +162,12 @@ public class OperationCoverageComparator {
         public String generateGptPrompt() {
             StringBuilder prompt = new StringBuilder();
 
-            prompt.append("\n📊 API 操作覆蓋率分析結果:\n");
+            prompt.append("\n API 操作覆蓋率分析結果:\n");
             prompt.append(String.format("覆蓋率: %.1f%% (%d/%d 個操作已實現)\n",
                     coveragePercentage, coveredOperations.size(), expectedOperations.size()));
 
             if (!missingOperations.isEmpty()) {
-                prompt.append("\n❌ 以下 API 操作尚未在 Karate 測試中實現，請特別注意:\n");
+                prompt.append("\n 以下 API 操作尚未在 Karate 測試中實現，請特別注意:\n");
                 for (ApiOperationExtractor.ApiOperation op : missingOperations) {
                     prompt.append(String.format("   • %s", op.getFullSignature()));
                     if (op.getSummary() != null) {
@@ -178,14 +178,14 @@ public class OperationCoverageComparator {
             }
 
             if (!extraOperations.isEmpty()) {
-                prompt.append("\n⚠️ 以下操作在 Karate 中實現但不在 API 文件中，請確認:\n");
+                prompt.append("\n 以下操作在 Karate 中實現但不在 API 文件中，請確認:\n");
                 for (ApiOperationExtractor.ApiOperation op : extraOperations) {
                     prompt.append(String.format("   • %s\n", op.getFullSignature()));
                 }
             }
 
             if (isFullyCovered() && !hasExtraOperations()) {
-                prompt.append("\n✅ 所有 API 操作都已正確實現！");
+                prompt.append("\n 所有 API 操作都已正確實現！");
             }
 
             return prompt.toString();
@@ -193,7 +193,7 @@ public class OperationCoverageComparator {
     }
 
     /**
-     * 🎯 主要比對方法：比較期望操作與實現操作
+     *  主要比對方法：比較期望操作與實現操作
      */
     public ComparisonResult compareOperations(
             ApiOperationExtractor.ApiAnalysisResult expectedResult,
@@ -209,7 +209,7 @@ public class OperationCoverageComparator {
     }
 
     /**
-     * 🔍 詳細比對兩個操作列表
+     *  詳細比對兩個操作列表
      */
     public ComparisonResult compareOperations(
             List<ApiOperationExtractor.ApiOperation> expectedOps,
@@ -260,7 +260,7 @@ public class OperationCoverageComparator {
     }
 
     /**
-     * 🔍 路徑匹配檢查（處理路徑參數的差異）
+     *  路徑匹配檢查（處理路徑參數的差異）
      */
     private boolean isPathMatching(ApiOperationExtractor.ApiOperation targetOp,
                                    List<ApiOperationExtractor.ApiOperation> candidateOps) {
@@ -285,7 +285,7 @@ public class OperationCoverageComparator {
     }
 
     /**
-     * 🔍 路徑參數匹配檢查
+     *  路徑參數匹配檢查
      */
     private boolean isPathParameterMatch(String expectedPath, String actualPath) {
         // 將 {id} 替換為通配符進行匹配
@@ -302,7 +302,7 @@ public class OperationCoverageComparator {
     }
 
     /**
-     * 🧠 添加智能警告和建議
+     *  添加智能警告和建議
      */
     private void addIntelligentWarnings(ComparisonResult result) {
         // 檢查常見的路徑參數問題
@@ -338,7 +338,7 @@ public class OperationCoverageComparator {
     }
 
     /**
-     * 🔍 檢查路徑相似性
+     *  檢查路徑相似性
      */
     private boolean areSimilarPaths(String path1, String path2) {
         // 移除路徑參數後比較
@@ -351,12 +351,12 @@ public class OperationCoverageComparator {
     }
 
     /**
-     * 📊 生成統計報告
+     *  生成統計報告
      */
     public String generateStatisticsReport(ComparisonResult result) {
         StringBuilder report = new StringBuilder();
 
-        report.append("📊 操作覆蓋統計報告:\n");
+        report.append(" 操作覆蓋統計報告:\n");
         report.append(String.format("   總體覆蓋率: %.1f%%\n", result.getCoveragePercentage()));
         report.append(String.format("   期望操作數: %d 個\n", result.getExpectedOperations().size()));
         report.append(String.format("   實現操作數: %d 個\n", result.getImplementedOperations().size()));
@@ -365,7 +365,7 @@ public class OperationCoverageComparator {
         report.append(String.format("   額外操作數: %d 個\n", result.getExtraOperations().size()));
 
         if (!result.getWarnings().isEmpty()) {
-            report.append("\n⚠️ 警告:\n");
+            report.append("\n 警告:\n");
             for (String warning : result.getWarnings()) {
                 report.append(String.format("   • %s\n", warning));
             }

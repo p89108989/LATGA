@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
- * 🔧 TestCaseVerification Spring Boot 配置類
+ *  TestCaseVerification Spring Boot 配置類
  * 處理 Spring Boot 配置與 KarateExecutor.ExecutorConfig 的轉換
  *
  * @author StaticBlackbox Team
@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 public class TestCaseVerificationConfig {
 
     /**
-     * 🆕 Karate 執行器配置屬性
+     *  Karate 執行器配置屬性
      */
     @ConfigurationProperties(prefix = "karate.verification.executor")
     public static class KarateExecutorProperties {
@@ -59,7 +59,7 @@ public class TestCaseVerificationConfig {
         public void setExecutionMode(KarateExecutor.ExecutionMode executionMode) { this.executionMode = executionMode; }
 
         /**
-         * 🔄 轉換為 KarateExecutor.ExecutorConfig
+         *  轉換為 KarateExecutor.ExecutorConfig
          */
         public KarateExecutor.ExecutorConfig toExecutorConfig() {
             return KarateExecutor.ExecutorConfig.defaultConfig()
@@ -73,7 +73,7 @@ public class TestCaseVerificationConfig {
     }
 
     /**
-     * 🆕 質量保證配置屬性
+     *  質量保證配置屬性
      */
     @ConfigurationProperties(prefix = "karate.verification.quality-assurance")
     public static class QualityAssuranceProperties {
@@ -107,7 +107,7 @@ public class TestCaseVerificationConfig {
     // 不需要手動註冊 Bean，@EnableConfigurationProperties 會自動處理
 
     /**
-     * 🎯 主要的 TestCaseVerification Bean
+     *  主要的 TestCaseVerification Bean
      */
     @Bean
     public TestCaseVerification testCaseVerification(
@@ -116,7 +116,7 @@ public class TestCaseVerificationConfig {
 
         KarateExecutor.ExecutorConfig executorConfig = executorProperties.toExecutorConfig();
 
-        System.out.println("🔧 初始化 TestCaseVerification:");
+        System.out.println("   初始化 TestCaseVerification:");
         System.out.println("   超時設定: " + executorProperties.getTimeoutSeconds() + " 秒");
         System.out.println("   執行模式: " + executorProperties.getExecutionMode());
         System.out.println("   詳細輸出: " + executorProperties.isVerboseOutput());
@@ -125,7 +125,7 @@ public class TestCaseVerificationConfig {
     }
 
     /**
-     * 🔄 將現有的 KarateExecutorConfig 轉換為 KarateExecutor.ExecutorConfig
+     *  將現有的 KarateExecutorConfig 轉換為 KarateExecutor.ExecutorConfig
      * 這個方法用於與現有代碼的向後兼容
      */
     @Bean("legacyExecutorConfigConverter")
@@ -133,7 +133,7 @@ public class TestCaseVerificationConfig {
             @Autowired(required = false) KarateExecutorConfig legacyConfig) {
 
         if (legacyConfig != null) {
-            System.out.println("⚠️ 檢測到舊版 KarateExecutorConfig，正在轉換...");
+            System.out.println(" 檢測到舊版 KarateExecutorConfig，正在轉換...");
 
             // 嘗試從舊版配置提取資訊（如果有 getter 方法的話）
             // 如果舊版配置沒有對應的 getter，使用預設值
@@ -142,13 +142,13 @@ public class TestCaseVerificationConfig {
                     .cleanupTempFiles(true)
                     .verboseOutput(false);
         } else {
-            System.out.println("🆕 使用新版配置系統");
+            System.out.println(" 使用新版配置系統");
             return KarateExecutor.ExecutorConfig.defaultConfig();
         }
     }
 
     /**
-     * 🛠️ 開發環境配置 Profile
+     *  開發環境配置 Profile
      */
     @Bean("developmentExecutorConfig")
     @Profile("development")
@@ -161,7 +161,7 @@ public class TestCaseVerificationConfig {
     }
 
     /**
-     * 🏭 生產環境配置 Profile
+     *  生產環境配置 Profile
      */
     @Bean("productionExecutorConfig")
     @Profile("production")
@@ -174,7 +174,7 @@ public class TestCaseVerificationConfig {
     }
 
     /**
-     * 🧪 測試環境配置 Profile
+     *  測試環境配置 Profile
      */
     @Bean("testingExecutorConfig")
     @Profile("test")
@@ -185,7 +185,7 @@ public class TestCaseVerificationConfig {
     }
 
     /**
-     * 📊 配置資訊顯示（啟動時輸出）
+     *  配置資訊顯示（啟動時輸出）
      */
     @Bean
     public String displayConfigurationInfo(KarateExecutorProperties executorProperties,
@@ -194,22 +194,22 @@ public class TestCaseVerificationConfig {
 
         StringBuilder info = new StringBuilder();
         info.append("\n").append("=".repeat(60)).append("\n");
-        info.append("🚀 TestCaseVerification 配置資訊\n");
+        info.append(" TestCaseVerification 配置資訊\n");
         info.append("=".repeat(60)).append("\n");
 
-        info.append("📋 執行器配置:\n");
+        info.append(" 執行器配置:\n");
         info.append("   超時時間: ").append(executorProperties.getTimeoutSeconds()).append(" 秒\n");
         info.append("   清理臨時檔案: ").append(executorProperties.isCleanupTempFiles() ? "是" : "否").append("\n");
         info.append("   詳細輸出: ").append(executorProperties.isVerboseOutput() ? "是" : "否").append("\n");
         info.append("   Java 命令: ").append(executorProperties.getJavaCommand()).append("\n");
         info.append("   執行模式: ").append(executorProperties.getExecutionMode()).append("\n");
 
-        info.append("\n📋 質量保證配置:\n");
+        info.append("\n 質量保證配置:\n");
         info.append("   最大迭代次數: ").append(qaProperties.getMaxIterations()).append("\n");
         info.append("   啟用執行驗證: ").append(qaProperties.isEnableExecutionValidation() ? "是" : "否").append("\n");
         info.append("   支援自定義 Prompt: ").append(qaProperties.isEnableCustomPrompt() ? "是" : "否").append("\n");
 
-        info.append("\n🔍 環境檢查:\n");
+        info.append("\n 環境檢查:\n");
         info.append(verificationService.getExecutorEnvironmentInfo());
 
         info.append("=".repeat(60)).append("\n");

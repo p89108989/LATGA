@@ -109,7 +109,7 @@ public class KarateGeneratorGPT {
 
     /**
      *  增強的執行方法 - 支援自定義 Prompt 和驗證模式選擇
-     * @param mode 模式 ("Structural" 或 "Behavior")
+     * @param mode 模式 ("Structural" 或 "behavior")
      * @param fileDataList 已選擇的檔案列表
      * @param customPrompt 用戶自定義的 prompt（可選）
      * @param verificationMode 驗證模式 ("none", "quick", "standard", "comprehensive")
@@ -645,10 +645,10 @@ public class KarateGeneratorGPT {
         // 原有實現保持不變
         String promptFileName;
         switch (mode.toLowerCase()) {
-            case "Structural":
+            case "structural":
                 promptFileName = "Structural_prompt.txt";
                 break;
-            case "Behavior":
+            case "behavior":
                 promptFileName = "Behavior_prompt.txt";
                 break;
             default:

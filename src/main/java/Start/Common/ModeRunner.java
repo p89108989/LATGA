@@ -34,7 +34,7 @@ public class ModeRunner {
 
     /**
      * 執行指定模式 - 原版本（保持不變）
-     * @param mode 模式 ("Structural" 或 "Behavior")
+     * @param mode 模式 ("structural" 或 "behavior")
      * @param fileDataList 已選擇的檔案列表
      * @throws Exception 執行過程中的異常
      */
@@ -45,7 +45,7 @@ public class ModeRunner {
 
     /**
      *  執行指定模式 - 支援自定義 Prompt（新增版本）
-     * @param mode 模式 ("Structural" 或 "Behavior")
+     * @param mode 模式 ("structural" 或 "behavior")
      * @param fileDataList 已選擇的檔案列表
      * @param customPrompt 用戶自定義的 prompt（可選）
      * @throws Exception 執行過程中的異常
@@ -95,10 +95,10 @@ public class ModeRunner {
         try {
             // 根據模式執行不同的處理流程（ 傳遞自定義 prompt）
             switch (normalizedMode) {
-                case "Structural":
+                case "structural":
                     executeStructuralModeWithPrompt(fileDataList, customPrompt);
                     break;
-                case "Behavior":
+                case "behavior":
                     executeBehaviorModeWithPrompt(fileDataList, customPrompt);
                     break;
                 default:
@@ -138,7 +138,7 @@ public class ModeRunner {
 
         // 委託給 KarateGeneratorGPT 處理
         System.out.println(" 啟動 Karate Generator GPT...");
-        karateGeneratorGPT.execute("Structural", fileDataList);
+        karateGeneratorGPT.execute("structural", fileDataList);
     }
 
     /**
@@ -158,7 +158,7 @@ public class ModeRunner {
 
         // 委託給 KarateGeneratorGPT 處理，傳遞自定義 prompt
         System.out.println(" 啟動 Karate Generator GPT (含自定義指令)...");
-        karateGeneratorGPT.execute("Structural", fileDataList, customPrompt);
+        karateGeneratorGPT.execute("structural", fileDataList, customPrompt);
     }
 
     /**
@@ -215,7 +215,7 @@ public class ModeRunner {
 
         // 委託給 KarateGeneratorGPT 處理
         System.out.println(" 啟動 Karate Generator GPT...");
-        karateGeneratorGPT.execute("Behavior", allFilesForKarate);
+        karateGeneratorGPT.execute("behavior", allFilesForKarate);
     }
 
     /**
@@ -290,7 +290,7 @@ public class ModeRunner {
         //  委託給 KarateGeneratorGPT 處理，傳遞自定義 prompt
         System.out.println(" 啟動 Karate Generator GPT (含自定義指令)...");
         System.out.println(" Karate 測試生成將整合自定義指令");
-        karateGeneratorGPT.execute("Behavior", allFilesForKarate, customPrompt);
+        karateGeneratorGPT.execute("behavior", allFilesForKarate, customPrompt);
     }
 
     /**
@@ -417,7 +417,7 @@ public class ModeRunner {
      * @return true 如果模式受支援
      */
     private boolean isSupportedMode(String mode) {
-        return "Structural".equals(mode) || "Behavior".equals(mode);
+        return "structural".equals(mode) || "behavior".equals(mode);
     }
 
     /**
@@ -425,7 +425,7 @@ public class ModeRunner {
      * @return 支援的模式陣列
      */
     public String[] getSupportedModes() {
-        return new String[]{"Structural", "Behavior"};
+        return new String[]{"structural", "behavior"};
     }
 
     /**
@@ -435,9 +435,9 @@ public class ModeRunner {
      */
     public String getModeDescription(String mode) {
         switch (mode.toLowerCase()) {
-            case "Structural":
+            case "structural":
                 return "基於API文檔生成靜態測試案例";
-            case "Behavior":
+            case "behavior":
                 return "動態測試生成：前端分析 → Gherkin → Karate 測試";
             default:
                 return "未知模式";

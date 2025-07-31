@@ -629,7 +629,7 @@
                     <h4 class="mb-3"><i class="fas fa-tasks"></i> Test Case Generation Mode</h4>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <div class="card mode-card h-100" data-mode="Structural">
+                            <div class="card mode-card h-100" data-mode="structural">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center mb-3">
                                         <i class="fas fa-file-code text-primary me-3" style="font-size: 1.8rem;"></i>
@@ -644,13 +644,13 @@
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <div class="card mode-card h-100" data-mode="Behavior">
+                            <div class="card mode-card h-100" data-mode="behavioral">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center mb-3">
                                         <i class="fas fa-robot text-success me-3" style="font-size: 1.8rem;"></i>
                                         <h4 class="card-title mb-0">Behavioral Blackbox</h4>
                                     </div>
-                                    <p class="card-text text-muted mb-3" style="font-size: 1.1rem;">Behavior test generation and execution, including frontend and user behavior analysis</p>
+                                    <p class="card-text text-muted mb-3" style="font-size: 1.1rem;">Behavioral test generation and execution, including frontend and user Behavioral analysis</p>
                                     <small class="text-muted">
                                         <i class="fas fa-check-circle text-success"></i>
                                         Please provide Swagger file, API operation dependency graph (RTG generated), and API frontend
@@ -659,7 +659,7 @@
                             </div>
                         </div>
                     </div>
-                    <input type="hidden" id="selectedMode" name="mode" value="Structural" required>
+                    <input type="hidden" id="selectedMode" name="mode" value="structural" required>
                 </div>
 
                 <!-- Claude AI assistant section (only shown in Behavioral mode) -->
@@ -932,7 +932,7 @@
 
 <script>
     // Global variables
-    let selectedMode = 'Structural';
+    let selectedMode = 'structural';
     let selectedFiles = [];
     let processingStartTime = null;
 
@@ -945,7 +945,7 @@
         setupCustomPrompt(); // Setup custom prompt functionality
         requestNotificationPermission();
 
-        console.log('✅ LATGA frontend initialized (with Customed Prompt support)');
+        console.log(' LATGA frontend initialized (with Customed Prompt support)');
     });
 
     // Setup custom prompt functionality
@@ -970,7 +970,7 @@
                 toggleText.textContent = 'Remove Custom Prompt';
                 toggleBtn.className = 'btn btn-success btn-toggle-prompt';
 
-                console.log('✅ Customed prompt enabled');
+                console.log(' Customed prompt enabled');
             } else {
                 // Hide custom prompt area with animation
                 customPromptArea.classList.add('hiding');
@@ -989,7 +989,7 @@
                 // Clear the textarea
                 document.getElementById('customPrompt').value = '';
 
-                console.log('❌ Customed prompt disabled');
+                console.log(' Customed prompt disabled');
             }
         });
     }
@@ -1068,9 +1068,9 @@
         const claudeSection = document.getElementById('claudeAISection');
 
         // Default select Structural mode
-        const StructuralCard = document.querySelector('[data-mode="Structural"]');
-        if (StructuralCard) {
-            StructuralCard.classList.add('selected');
+        const structuralCard = document.querySelector('[data-mode="structural"]');
+        if (structuralCard) {
+            structuralCard.classList.add('selected');
         }
 
         modeCards.forEach(card => {
@@ -1085,7 +1085,7 @@
                 // Update UI based on mode
                 updateUIForMode(selectedMode, fileSupportInfo, claudeSection);
 
-                console.log('🔄 Mode switched to:', selectedMode);
+                console.log(' Mode switched to:', selectedMode);
             });
         });
     }
@@ -1100,11 +1100,11 @@
                 fileSupportInfo.textContent = '(Supported: .feature - Karate Test Files)';
                 if (claudeSection) claudeSection.style.display = 'none';
                 break;
-            case 'Structural':
+            case 'structural':
                 fileSupportInfo.textContent = '(Supported: .JSON, .YAML, .dot)';
                 if (claudeSection) claudeSection.style.display = 'none';
                 break;
-            case 'Behavior':
+            case 'behavioral':
                 fileSupportInfo.textContent = '(Supported: .JSON, .YAML, .dot, web frontend)';
                 if (claudeSection) claudeSection.style.display = 'block';
                 break;
@@ -1145,7 +1145,7 @@
                 }
             }
 
-            console.log('🚀 Starting form submission...');
+            console.log(' Starting form submission...');
             console.log('   File count:', files.length);
             console.log('   Mode:', selectedMode);
 
@@ -1161,7 +1161,7 @@
 
             if (customPrompt) {
                 formData.append('customPrompt', customPrompt);
-                console.log('📝 Including custom prompt:', customPrompt.substring(0, 100) + '...');
+                console.log(' Including custom prompt:', customPrompt.substring(0, 100) + '...');
             }
 
             // Show processing interface
@@ -1169,7 +1169,7 @@
             startSimulatedProgress();
 
             const requestStartTime = Date.now();
-            console.log('📤 Sending request to backend...', new Date().toISOString());
+            console.log(' Sending request to backend...', new Date().toISOString());
 
             // Send request
             fetch('/api/latga/run', {
@@ -1178,7 +1178,7 @@
             })
                 .then(response => {
                     const requestTime = Date.now() - requestStartTime;
-                    console.log(`📥 Received response, time taken: ${requestTime}ms`);
+                    console.log(` Received response, time taken: ${requestTime}ms`);
                     console.log('   Status code:', response.status);
 
                     const executionId = response.headers.get('X-Execution-ID');
@@ -1186,7 +1186,7 @@
                     const generatedFiles = response.headers.get('X-Generated-Files');
 
                     if (response.ok) {
-                        console.log('✅ Request successful, starting blob processing...');
+                        console.log(' Request successful, starting blob processing...');
                         return response.blob().then(blob => {
                             return { blob, executionId, processingTime, generatedFiles };
                         });
@@ -1200,7 +1200,7 @@
                     handleSuccessCallback(blob, { executionId, processingTime, generatedFiles });
                 })
                 .catch(error => {
-                    console.error('❌ Request failed:', error);
+                    console.error(' Request failed:', error);
                     handleErrorCallback(error.message, {
                         requestTime: Date.now() - requestStartTime
                     });
@@ -1210,7 +1210,7 @@
 
     // Success handling callback
     function handleSuccessCallback(blob, metadata) {
-        console.log('🎉 Processing success callback...');
+        console.log(' Processing success callback...');
 
         clearProgress();
         updateProgress(100, 'Processing complete! Preparing download...');
@@ -1226,8 +1226,8 @@
             case 'karate-merger':
                 fileName = `merged_karate_${timestamp}.feature`;
                 break;
-            case 'Structural':
-            case 'Behavior':
+            case 'structural':
+            case 'behavioral':
                 if (blob.type === 'text/plain' || blob.type.includes('text/')) {
                     fileName = `karate_test_${selectedMode}_${timestamp}.feature`;
                 } else {
@@ -1258,7 +1258,7 @@
     }
 
     function handleErrorCallback(errorMessage) {
-        console.log('❌ Processing error callback:', errorMessage);
+        console.log(' Processing error callback:', errorMessage);
 
         clearProgress();
         hideProcessingOverlay();
@@ -1308,8 +1308,8 @@
             case 'karate-merger':
                 baseMessage = 'Intelligently merging Karate test files...';
                 break;
-            case 'Structural':
-            case 'Behavior':
+            case 'structural':
+            case 'behavioral':
                 baseMessage = 'Analyzing files and generating Karate test cases...';
                 break;
             default:
@@ -1323,7 +1323,7 @@
         }
 
         processingStartTime = Date.now();
-        console.log('🔄 Showing processing interface');
+        console.log(' Showing processing interface');
     }
 
     function startSimulatedProgress() {
@@ -1424,12 +1424,12 @@
             Array.from(files).forEach(file => dt.items.add(file));
             fileInput.files = dt.files;
             updateFileDisplay();
-            console.log('📁 File processing complete, file count:', files.length);
+            console.log(' File processing complete, file count:', files.length);
         }
     }
 
     function removeFile(index) {
-        console.log('🗑️ Removing file index:', index);
+        console.log(' Removing file index:', index);
         const dt = new DataTransfer();
         const files = document.getElementById('files').files;
 
@@ -1442,7 +1442,7 @@
         document.getElementById('files').files = dt.files;
         selectedFiles.splice(index, 1);
         updateFileDisplay();
-        console.log('✅ File removed, remaining files:', selectedFiles.length);
+        console.log(' File removed, remaining files:', selectedFiles.length);
     }
 
     function updateFileDisplay() {
@@ -1512,7 +1512,7 @@
 
     function triggerBrowserDownload(downloadUrl, filename) {
         try {
-            console.log('📥 Attempting to trigger auto download:', filename);
+            console.log(' Attempting to trigger auto download:', filename);
             const tempLink = document.createElement('a');
             tempLink.href = downloadUrl;
             tempLink.download = filename;
@@ -1521,10 +1521,10 @@
             setTimeout(() => {
                 tempLink.click();
                 document.body.removeChild(tempLink);
-                console.log('✅ Auto download triggered');
+                console.log(' Auto download triggered');
             }, 100);
         } catch (error) {
-            console.log('❌ Auto download failed:', error.message);
+            console.log(' Auto download failed:', error.message);
             showNotification('Please download manually', 'Auto download failed, please click the download button to download manually', 'warning');
         }
     }
@@ -1617,7 +1617,7 @@
         if (window.progressInterval) {
             clearInterval(window.progressInterval);
             window.progressInterval = null;
-            console.log('🧹 Progress simulation cleared');
+            console.log(' Progress simulation cleared');
         }
     }
 
@@ -1633,7 +1633,7 @@
             messageElement.textContent = message;
         }
 
-        console.log(`📊 Progress update: ${percentage}% - ${message}`);
+        console.log(` Progress update: ${percentage}% - ${message}`);
     }
 
     function requestNotificationPermission() {
@@ -1707,11 +1707,11 @@
         document.getElementById('customPrompt').value = '';
 
         document.querySelectorAll('[data-mode]').forEach(card => card.classList.remove('selected'));
-        const StructuralCard = document.querySelector('[data-mode="Structural"]');
-        if (StructuralCard) StructuralCard.classList.add('selected');
+        const structuralCard = document.querySelector('[data-mode="structural"]');
+        if (structuralCard) structuralCard.classList.add('selected');
 
-        document.getElementById('selectedMode').value = 'Structural';
-        selectedMode = 'Structural';
+        document.getElementById('selectedMode').value = 'structural';
+        selectedMode = 'structural';
         selectedFiles = [];
 
         const fileSupportInfo = document.getElementById('fileSupportInfo');
@@ -1719,7 +1719,7 @@
             fileSupportInfo.textContent = '(Supported: .JSON, .YAML, .dot)';
         }
 
-        console.log('🔄 Form reset (including custom prompt)');
+        console.log(' Form reset (including custom prompt)');
     }
 </script>
 </body>

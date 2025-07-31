@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 /**
  *  Enhanced LATGA Controller - 整合 Karate 合併功能和自定義 Prompt 支援
- * 支援四種模式：static, Behavioral, editorgpt, karate-merger
+ * 支援四種模式：static, behavioral, editorgpt, karate-merger
  */
 @RestController
 @RequestMapping("/api/latga")
@@ -93,8 +93,8 @@ public class LATGAController {
                 case "karate-merger": //  新增 Karate 合併模式
                     result = handleKarateMergerMode(fileDataList, customPrompt, executionId, startTime);
                     break;
-                case "Structural":
-                case "Behavioral":
+                case "structural":
+                case "behavioral":
                     result = handleKarateMode(mode, fileDataList, customPrompt, executionId, startTime);
                     break;
                 default:
@@ -307,7 +307,7 @@ public class LATGAController {
     }
 
     /**
-     *  處理 Karate 模式 (Structural/Behavioral)（支援自定義 Prompt）
+     *  處理 Karate 模式 (structural/behavioral)（支援自定義 Prompt）
      */
     private ResponseEntity<Resource> handleKarateMode(String mode, List<FileData> fileDataList, String customPrompt,
                                                       String executionId, long startTime)
@@ -735,7 +735,7 @@ public class LATGAController {
             throw new ValidationException("未上傳任何檔案");
         }
 
-        List<String> supportedModes = List.of("Structural", "Behavioral", "editorgpt", "karate-merger");
+        List<String> supportedModes = List.of("structural", "behavioral", "editorgpt", "karate-merger");
         if (!supportedModes.contains(mode.toLowerCase())) {
             throw new ValidationException("無效的模式: " + mode);
         }
@@ -875,7 +875,7 @@ public class LATGAController {
 
     @GetMapping("/modes")
     public ResponseEntity<String[]> getSupportedModes() {
-        return ResponseEntity.ok(new String[]{"Structural", "Behavioral", "editorgpt", "karate-merger"});
+        return ResponseEntity.ok(new String[]{"structural", "behavioral", "editorgpt", "karate-merger"});
     }
 
     @GetMapping("/health")
@@ -884,7 +884,7 @@ public class LATGAController {
         health.put("status", "UP");
         health.put("timestamp", LocalDateTime.now().toString());
         health.put("version", "v4.1 - Enhanced with KarateMerger & Custom Prompt Support"); //  更新版本資訊
-        health.put("supportedModes", List.of("Structural", "Behavioral", "editorgpt", "karate-merger"));
+        health.put("supportedModes", List.of("structural", "behavioral", "editorgpt", "karate-merger"));
         health.put("customPromptSupported", true); //  添加自定義 prompt 支援狀態
         health.put("services", Map.of(
                 "modeRunner", modeRunner != null,

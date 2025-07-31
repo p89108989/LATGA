@@ -12,7 +12,7 @@ import java.util.Scanner;
  * - 改進的使用者體驗
  * - 更好的錯誤處理
  *
- * @author StructuralBlackbox Team
+ * @author structuralBlackbox Team
  * @version 3.1
  */
 @Component
@@ -22,25 +22,25 @@ public class ModeSelector {
 
     /**
      * 讓用戶選擇執行模式
-     * @return 選擇的模式 ("Structural", "dynamic", "exit")
+     * @return 選擇的模式 ("structural", "dynamic", "exit")
      */
     public String selectMode() {
         while (true) {
             displayModeOptions();
-            System.out.print("👤 請輸入選項 (1/2/3 或 Structural/dynamic/exit): ");
+            System.out.print(" 請輸入選項 (1/2/3 或 structural/dynamic/exit): ");
 
             String input = scanner.nextLine().trim().toLowerCase();
 
             switch (input) {
                 case "1":
-                case "Structural":
-                    System.out.println("✅ 已選擇：Structural 模式");
-                    displayModeDetails("Structural");
-                    return "Structural";
+                case "structural":
+                    System.out.println(" 已選擇：structural 模式");
+                    displayModeDetails("structural");
+                    return "structural";
 
                 case "2":
                 case "dynamic":
-                    System.out.println("✅ 已選擇：Dynamic 模式");
+                    System.out.println(" 已選擇：Dynamic 模式");
                     displayModeDetails("dynamic");
                     return "dynamic";
 
@@ -48,7 +48,7 @@ public class ModeSelector {
                 case "exit":
                 case "quit":
                 case "bye":
-                    System.out.println("✅ 已選擇：退出程式");
+                    System.out.println(" 已選擇：退出程式");
                     return "exit";
 
                 case "help":
@@ -58,8 +58,8 @@ public class ModeSelector {
                     continue;
 
                 default:
-                    System.out.println("❌ 無效的選項：" + input);
-                    System.out.println("💡 請輸入 1、2、3 或對應的模式名稱");
+                    System.out.println(" 無效的選項：" + input);
+                    System.out.println(" 請輸入 1、2、3 或對應的模式名稱");
                     System.out.println("   輸入 'help' 查看詳細說明");
                     continue;
             }
@@ -70,13 +70,13 @@ public class ModeSelector {
      * 顯示模式選項
      */
     private void displayModeOptions() {
-        System.out.println("\n📋 請選擇執行模式：");
-        System.out.println("   1️⃣ Structural 模式  - 基於API文檔生成靜態測試案例");
-        System.out.println("   2️⃣ Dynamic 模式 - 動態測試生成和執行，包含前端和用戶行為分析");
-        System.out.println("   3️⃣ 退出程式");
+        System.out.println("\n 請選擇執行模式：");
+        System.out.println("    structural 模式  - 基於API文檔生成靜態測試案例");
+        System.out.println("    Dynamic 模式 - 動態測試生成和執行，包含前端和用戶行為分析");
+        System.out.println("    退出程式");
         System.out.println();
-        System.out.println("💡 模式差異：");
-        System.out.println("   • Structural：適用於 API 文檔檔案 (JSON/YAML)，使用 Structural_prompt.txt");
+        System.out.println(" 模式差異：");
+        System.out.println("   • structural：適用於 API 文檔檔案 (JSON/YAML)，使用 structural_prompt.txt");
         System.out.println("   • Dynamic：適用於前端程式碼和行為分析檔案 (所有格式)，使用 dynamic_prompt.txt");
         System.out.println("   • 輸入 'help' 查看詳細說明");
         System.out.println();
@@ -87,13 +87,13 @@ public class ModeSelector {
      * @param mode 選擇的模式
      */
     private void displayModeDetails(String mode) {
-        System.out.println("ℹ️ " + mode.toUpperCase() + " 模式資訊：");
+        System.out.println("ℹ " + mode.toUpperCase() + " 模式資訊：");
 
         switch (mode.toLowerCase()) {
-            case "Structural":
+            case "structural":
                 System.out.println("   📄 支援檔案：Swagger/OpenAPI 文檔 (.json, .yaml, .yml)");
                 System.out.println("   🎯 用途：生成基於 API 規格的測試案例");
-                System.out.println("   📝 Prompt：使用 prompts/Structural_prompt.txt");
+                System.out.println("   📝 Prompt：使用 prompts/structural_prompt.txt");
                 System.out.println("   🔧 特點：靜態分析，基於 API 端點生成測試");
                 break;
 
@@ -115,7 +115,7 @@ public class ModeSelector {
         System.out.println("📖 詳細模式說明");
         System.out.println("=".repeat(60));
 
-        System.out.println("\n🔸 Structural 模式：");
+        System.out.println("\n🔸 structural 模式：");
         System.out.println("   目的：基於 API 文檔生成靜態測試案例");
         System.out.println("   輸入：Swagger/OpenAPI 規格檔案");
         System.out.println("   格式：JSON (.json), YAML (.yaml, .yml)");

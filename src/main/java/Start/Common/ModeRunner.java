@@ -13,11 +13,11 @@ import java.util.List;
 /**
  * 統一的模式執行器
  * 重構版本：支援檔案列表參數，實現更好的職責分離
- * 替代原來的 StructuralModeRunner 和 BehaviorModeRunner
+ * 替代原來的 StructuralModeRunner 和 behavioralModeRunner
  *
  * 新增功能：
  * - Structural 模式：直接生成 Karate 測試
- * - Behavior 模式：先生成 Gherkin，再生成 Karate 測試
+ * - behavioral 模式：先生成 Gherkin，再生成 Karate 測試
  * -  Customed Prompt：支援用戶自定義指令整合
  *
  * @author StructuralBlackbox Team
@@ -34,7 +34,7 @@ public class ModeRunner {
 
     /**
      * 執行指定模式 - 原版本（保持不變）
-     * @param mode 模式 ("structural" 或 "behavior")
+     * @param mode 模式 ("structural" 或 "behavioral")
      * @param fileDataList 已選擇的檔案列表
      * @throws Exception 執行過程中的異常
      */
@@ -45,7 +45,7 @@ public class ModeRunner {
 
     /**
      *  執行指定模式 - 支援自定義 Prompt（新增版本）
-     * @param mode 模式 ("structural" 或 "behavior")
+     * @param mode 模式 ("structural" 或 "behavioral")
      * @param fileDataList 已選擇的檔案列表
      * @param customPrompt 用戶自定義的 prompt（可選）
      * @throws Exception 執行過程中的異常
@@ -98,7 +98,7 @@ public class ModeRunner {
                 case "structural":
                     executeStructuralModeWithPrompt(fileDataList, customPrompt);
                     break;
-                case "behavior":
+                case "behavioral":
                     executeBehaviorModeWithPrompt(fileDataList, customPrompt);
                     break;
                 default:
@@ -166,7 +166,7 @@ public class ModeRunner {
      * 兩階段處理：1. 生成 Gherkin  2. 生成 Karate 測試
      */
     private void executeBehaviorMode(List<FileData> fileDataList) throws Exception {
-        System.out.println("\n 執行 Behavior 模式處理流程...");
+        System.out.println("\n 執行 behavioral 模式處理流程...");
         System.out.println(" 兩階段處理：Gherkin 生成 → Karate 測試生成");
 
         // 分離不同類型的檔案
@@ -215,11 +215,11 @@ public class ModeRunner {
 
         // 委託給 KarateGeneratorGPT 處理
         System.out.println(" 啟動 Karate Generator GPT...");
-        karateGeneratorGPT.execute("behavior", allFilesForKarate);
+        karateGeneratorGPT.execute("behavioral", allFilesForKarate);
     }
 
     /**
-     *  執行 Behavior 模式 - 支援自定義 Prompt
+     *  執行 behavioral 模式 - 支援自定義 Prompt
      * 兩階段處理：1. 生成 Gherkin  2. 生成 Karate 測試
      */
     private void executeBehaviorModeWithPrompt(List<FileData> fileDataList, String customPrompt) throws Exception {
@@ -229,7 +229,7 @@ public class ModeRunner {
             return;
         }
 
-        System.out.println("\n 執行 Behavior 模式處理流程...");
+        System.out.println("\n 執行 behavioral 模式處理流程...");
         System.out.println(" 兩階段處理：Gherkin 生成 → Karate 測試生成");
         System.out.println(" 將應用自定義指令到動態測試生成中");
 
@@ -290,7 +290,7 @@ public class ModeRunner {
         //  委託給 KarateGeneratorGPT 處理，傳遞自定義 prompt
         System.out.println(" 啟動 Karate Generator GPT (含自定義指令)...");
         System.out.println(" Karate 測試生成將整合自定義指令");
-        karateGeneratorGPT.execute("behavior", allFilesForKarate, customPrompt);
+        karateGeneratorGPT.execute("behavioral", allFilesForKarate, customPrompt);
     }
 
     /**
@@ -417,7 +417,7 @@ public class ModeRunner {
      * @return true 如果模式受支援
      */
     private boolean isSupportedMode(String mode) {
-        return "structural".equals(mode) || "behavior".equals(mode);
+        return "structural".equals(mode) || "behavioral".equals(mode);
     }
 
     /**
@@ -425,7 +425,7 @@ public class ModeRunner {
      * @return 支援的模式陣列
      */
     public String[] getSupportedModes() {
-        return new String[]{"structural", "behavior"};
+        return new String[]{"structural", "behavioral"};
     }
 
     /**
@@ -437,7 +437,7 @@ public class ModeRunner {
         switch (mode.toLowerCase()) {
             case "structural":
                 return "基於API文檔生成靜態測試案例";
-            case "behavior":
+            case "behavioral":
                 return "動態測試生成：前端分析 → Gherkin → Karate 測試";
             default:
                 return "未知模式";
